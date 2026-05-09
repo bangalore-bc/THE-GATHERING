@@ -70,8 +70,18 @@ app.use((req, res, next) => {
         const token = req.cookies.auth_token;
         if (!token || token !== 'THE_GATHERING_VALID_SESSION') {
             return res.status(404).send('<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>');
-        } else if (req.path === '/admin') {
+        } else if (req.path === '/admin' || req.path === '/admin/') {
             return res.redirect('/admin.html');
+        } else if (req.path === '/admin.html') {
+            const fs = require('fs');
+            const rootPath = path.join(__dirname, '..', 'admin.html');
+            if (fs.existsSync(rootPath)) return res.sendFile(rootPath);
+            return res.sendFile(path.join(__dirname, 'admin.html'));
+        } else if (req.path === '/admin.js') {
+            const fs = require('fs');
+            const rootPath = path.join(__dirname, '..', 'admin.js');
+            if (fs.existsSync(rootPath)) return res.sendFile(rootPath);
+            return res.sendFile(path.join(__dirname, 'admin.js'));
         }
     }
     next();
