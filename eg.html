@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html class="light scroll-smooth" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <title>The Gathering — A Community Gathered in Grace</title>
+    <meta name="description" content="A collective architectural expression of faith, community, and radical presence in the heart of the city.">
+    
+    <!-- Link the CSS -->
+    <link rel="stylesheet" href="design.css">
+    
+    <!-- Link the JavaScript (which contains tailwind config and other logic) -->
+    <script src="script.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+
+<body class="bg-background text-on-surface font-body-md">
+    <!-- TopNavBar — Glassmorphism -->
+    <header class="nav-glass fixed top-0 left-0 right-0 z-50">
+        <nav class="flex justify-between items-center w-full px-4 sm:px-6 py-3 sm:py-4 max-w-[1440px] mx-auto">
+            <div class="text-xl font-black tracking-tighter text-stone-900">
+                <img alt="The Gathering Logo" class="h-7 sm:h-8 md:h-10 w-auto object-contain brightness-0 hover:scale-105 transition-transform duration-300" src="img/Gathering.png">
+            </div>
+            <div class="hidden md:flex items-center gap-8">
+                <a class="font-epilogue uppercase tracking-widest text-xs text-stone-400 hover:text-stone-900 transition-all duration-500 hover:tracking-[0.2em]" href="#speakers">Speakers</a>
+                <a class="font-epilogue uppercase tracking-widest text-xs text-stone-400 hover:text-stone-900 transition-all duration-500 hover:tracking-[0.2em]" href="#locations">Locations</a>
+                <a class="font-epilogue uppercase tracking-widest text-xs text-stone-400 hover:text-stone-900 transition-all duration-500 hover:tracking-[0.2em]" href="#archive">Archive</a>
+                <a class="font-epilogue uppercase tracking-widest text-xs text-stone-400 hover:text-stone-900 transition-all duration-500 hover:tracking-[0.2em]" href="#vision">Vision</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="register-btn" class="btn-primary bg-primary text-on-primary font-epilogue uppercase tracking-widest text-[10px] sm:text-xs px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl" onclick="window.open(this.dataset.url || '#', '_blank')">register</button>
+                <!-- Hamburger (mobile only) -->
+                <button class="mobile-menu-btn md:hidden" id="hamburger-btn" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Nav Overlay -->
+    <div class="mobile-nav-overlay" id="mobile-overlay"></div>
+
+    <!-- Mobile Nav Drawer -->
+    <nav class="mobile-nav-drawer" id="mobile-drawer">
+        <a href="#speakers" class="mobile-nav-link">Speakers</a>
+        <a href="#locations" class="mobile-nav-link">Locations</a>
+        <a href="#archive" class="mobile-nav-link">Archive</a>
+        <a href="#vision" class="mobile-nav-link">Vision</a>
+        <div class="mt-auto pt-8">
+            <button id="register-btn-mobile" class="w-full bg-primary text-on-primary font-epilogue uppercase tracking-widest text-xs px-6 py-4 rounded-2xl" onclick="window.open(document.getElementById('register-btn').dataset.url || '#', '_blank')">Register Now</button>
+        </div>
+    </nav>
+
+    <main class="snap-y snap-mandatory h-screen overflow-y-auto" id="main-scroll">
+        <!-- Hero / Headline Section -->
+        <section class="scroll-section snap-start w-full min-h-screen relative flex items-center justify-center pt-16 sm:pt-20 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-12 bg-stone-900 text-white overflow-hidden hero-mobile-optimize">
+            <!-- Background Image with Ken Burns -->
+            <div class="absolute inset-0 z-0">
+                <img id="hero-bg-img" alt="Homepage Image" class="w-full h-full object-cover opacity-50" src="img/WhatsApp Image 2026-04-25 at 12.45.26.jpeg">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"></div>
+            </div>
+
+            <!-- Content Overlay -->
+            <div class="max-w-[1440px] w-full mx-auto relative z-10 flex flex-col justify-center h-full">
+                <div class="border-l-[3px] sm:border-l-4 border-white/80 pl-5 sm:pl-8 lg:pl-12 max-w-4xl" style="animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;">
+                    <h1 class="font-display text-3xl sm:text-5xl lg:text-8xl font-extrabold uppercase mb-4 sm:mb-6 tracking-tighter leading-[1.05] sm:leading-none text-white" style="animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;">
+                        A <span id="secret-word-community" class="select-none cursor-default outline-none">Community</span><br><span id="secret-word-gathered" class="select-none cursor-default outline-none">Gathered</span> in <span id="secret-word-grace" class="select-none cursor-default outline-none">Grace</span>.
+                    </h1>
+                    <p class="font-body-lg text-base sm:text-xl lg:text-2xl max-w-2xl text-stone-300 mb-8 sm:mb-12" style="animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;">
+                        A collective architectural expression of faith, community, and radical presence in the heart of the city.
+                    </p>
+                    
+                    <!-- Countdown Timer Section -->
+                    <div class="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/20" style="animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.9s both;">
+                        <span class="font-label-bold text-[10px] sm:text-xs uppercase tracking-widest text-stone-400 block mb-4 sm:mb-6">Next Gathering In:</span>
+                        <div class="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-4 sm:gap-6 lg:gap-12">
+                            <div class="flex gap-3 sm:gap-4 lg:gap-8">
+                                <div class="flex flex-col items-center">
+                                    <span id="cd-days" class="font-display text-2xl sm:text-4xl lg:text-6xl font-bold tabular-nums">--</span>
+                                    <span class="font-label-sm text-[9px] sm:text-[10px] text-stone-500 uppercase tracking-widest mt-1">Days</span>
+                                </div>
+                                <span class="font-display text-2xl sm:text-4xl lg:text-6xl font-light text-white/30 self-start">:</span>
+                                <div class="flex flex-col items-center">
+                                    <span id="cd-hours" class="font-display text-2xl sm:text-4xl lg:text-6xl font-bold tabular-nums">--</span>
+                                    <span class="font-label-sm text-[9px] sm:text-[10px] text-stone-500 uppercase tracking-widest mt-1">Hours</span>
+                                </div>
+                                <span class="font-display text-2xl sm:text-4xl lg:text-6xl font-light text-white/30 self-start">:</span>
+                                <div class="flex flex-col items-center">
+                                    <span id="cd-mins" class="font-display text-2xl sm:text-4xl lg:text-6xl font-bold tabular-nums">--</span>
+                                    <span class="font-label-sm text-[9px] sm:text-[10px] text-stone-500 uppercase tracking-widest mt-1">Minutes</span>
+                                </div>
+                                <span class="font-display text-2xl sm:text-4xl lg:text-6xl font-light text-white/30 self-start">:</span>
+                                <div class="flex flex-col items-center">
+                                    <span id="cd-secs" class="font-display text-2xl sm:text-4xl lg:text-6xl font-bold tabular-nums">--</span>
+                                    <span class="font-label-sm text-[9px] sm:text-[10px] text-stone-500 uppercase tracking-widest mt-1">Seconds</span>
+                                </div>
+                            </div>
+                            <button id="remind-me-btn" class="btn-outline border-2 border-white/60 text-white px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-label-bold text-[10px] sm:text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500 backdrop-blur-md w-full sm:w-auto text-center">
+                                <div>remind me</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </section>
+
+        <!-- Speakers Section -->
+        <section id="speakers" class="scroll-section snap-start w-full min-h-[auto] sm:min-h-screen flex items-center justify-center py-10 sm:py-12 px-4 sm:px-6 lg:px-12 bg-[#f5f5f4]">
+            <div class="max-w-[1440px] w-full mx-auto mt-6 sm:mt-10">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 sm:mb-8 gap-3 reveal">
+                    <div>
+                        <span class="font-label-bold text-[10px] sm:text-xs uppercase tracking-widest text-stone-400 block mb-2">Voice of the Collective</span>
+                        <h2 class="font-display text-2xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tighter">Featured Speakers</h2>
+                    </div>
+                    <a href="speakers.html" class="font-label-bold text-[10px] sm:text-xs uppercase tracking-widest border-b-2 border-primary pb-1 cursor-pointer hover:text-stone-500 hover:border-stone-400 transition-all duration-500 shrink-0">View all voices</a>
+                </div>
+                <!-- Dynamic Speakers Container -->
+                <div id="speakers-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-8 lg:gap-12">
+                    <!-- Speakers will be injected here via JS -->
+                </div>
+                <style>
+                    #speakers-container.centered { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; }
+                    #speakers-container.centered > * { flex: 0 0 calc(33.333% - 2rem); max-width: calc(33.333% - 2rem); }
+                    @media (max-width: 768px) { 
+                        #speakers-container.centered > * { flex: 0 0 100%; max-width: 100%; }
+                        #speakers-container.centered { gap: 1.25rem; }
+                    }
+                    @media (min-width: 640px) and (max-width: 768px) {
+                        #speakers-container.centered > * { flex: 0 0 calc(50% - 1rem); max-width: calc(50% - 1rem); }
+                    }
+                </style>
+            </div>
+        </section>
+
+        <!-- Locations Section -->
+        <section id="locations" class="scroll-section snap-start w-full min-h-[auto] sm:min-h-screen flex items-center justify-center py-12 sm:py-20 px-4 sm:px-6 lg:px-12 bg-background">
+            <div class="max-w-[1440px] w-full mx-auto flex flex-col justify-center h-full">
+                <div class="flex justify-between items-end mb-8 sm:mb-12 reveal">
+                    <h2 class="font-display text-2xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tighter">Locations</h2>
+                </div>
+                <div id="locations-container" class="relative w-full min-h-[auto] sm:min-h-[400px] lg:min-h-[600px] overflow-visible reveal-scale stagger-2">
+                    <!-- Dynamic Locations Injected Here via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Previous Meetings Section -->
+        <section id="archive" class="scroll-section snap-start w-full min-h-[auto] sm:min-h-screen flex items-center justify-center py-12 sm:py-20 px-4 sm:px-6 lg:px-12 bg-stone-950 text-white">
+            <div class="max-w-[1440px] w-full mx-auto">
+                <div class="mb-8 sm:mb-12 pb-4 sm:pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 reveal">
+                    <div>
+                        <span class="font-label-bold text-[10px] sm:text-xs uppercase tracking-widest text-stone-500 block mb-2">The Archive</span>
+                        <h2 class="font-display text-2xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tighter text-white">Previous Meetings</h2>
+                    </div>
+                    <div class="h-[1px] flex-1 ml-0 sm:ml-8 bg-gradient-to-r from-white/20 to-transparent divider-animate hidden sm:block"></div>
+                </div>
+                <div id="meetings-container" class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-10 lg:gap-16">
+                    <!-- Dynamic meetings injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Upcoming Events & Subscribe Section -->
+        <section id="stay-connected" class="scroll-section snap-start w-full py-14 sm:py-24 px-4 sm:px-6 lg:px-12 bg-stone-50 border-t border-stone-200">
+            <div class="max-w-[1440px] w-full mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-24">
+                    <!-- Left: Upcoming Events -->
+                    <div class="reveal">
+                        <span class="font-label-bold text-[10px] sm:text-xs uppercase tracking-widest text-stone-400 block mb-3">What's Coming</span>
+                        <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold uppercase tracking-tighter mb-6 sm:mb-8">Upcoming Events</h2>
+                        <div id="home-events-list" class="space-y-0">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                    <!-- Right: Subscribe -->
+                    <div class="reveal stagger-1">
+                        <span class="font-label-bold text-[10px] sm:text-xs uppercase tracking-widest text-stone-400 block mb-3">Stay Updated</span>
+                        <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-bold uppercase tracking-tighter mb-4">Subscribe</h2>
+                        <p class="font-body-md text-sm sm:text-base text-stone-500 mb-6 sm:mb-8">Get notified about upcoming gatherings, events, and community updates. We respect your privacy — no spam, ever.</p>
+                        <form id="subscribe-form" class="space-y-3 sm:space-y-4">
+                            <div>
+                                <label class="block text-[10px] sm:text-xs uppercase tracking-widest font-bold text-stone-400 mb-2">Email Address</label>
+                                <input type="email" id="sub-email" class="w-full border border-stone-300 rounded-xl p-3 text-sm focus:border-stone-900 focus:ring-stone-900 transition-colors" placeholder="you@example.com" required>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] sm:text-xs uppercase tracking-widest font-bold text-stone-400 mb-2">Phone Number <span class="text-stone-300 font-normal">(optional)</span></label>
+                                <input type="tel" id="sub-phone" class="w-full border border-stone-300 rounded-xl p-3 text-sm focus:border-stone-900 focus:ring-stone-900 transition-colors" placeholder="+91 9876543210">
+                            </div>
+                            <button type="submit" class="w-full bg-black text-white font-label-bold text-[10px] sm:text-xs uppercase tracking-widest py-3.5 sm:py-4 rounded-xl hover:bg-stone-800 transition-colors duration-300">Subscribe for Updates</button>
+                            <p id="subscribe-status" class="text-sm text-center hidden"></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vision & Footer Section -->
+        <section id="vision" class="scroll-section snap-start w-full min-h-[auto] sm:min-h-screen flex flex-col justify-between pt-12 sm:pt-20 bg-background">
+            <div class="px-4 sm:px-6 lg:px-12 w-full max-w-[1440px] mx-auto flex-1 flex flex-col justify-center pt-8 sm:pt-16">
+
+                <!-- Vision & Mission -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-24 mb-10 sm:mb-16 reveal stagger-3">
+                    <div class="pr-0 sm:pr-6">
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold uppercase mb-4 sm:mb-6 tracking-tighter">Our Vision</h2>
+                        <p class="font-body-lg text-base sm:text-lg leading-relaxed text-stone-500 italic border-l-2 border-stone-300 pl-4 sm:pl-6">
+                            Transformed Communities and a Prepared Church for Jesus Christ.
+                        </p>
+                    </div>
+                    <div class="pr-0 sm:pr-6">
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold uppercase mb-4 sm:mb-6 tracking-tighter">Our Mission</h2>
+                        <p class="font-body-lg text-base sm:text-lg leading-relaxed text-stone-500 italic border-l-2 border-stone-300 pl-4 sm:pl-6">
+                            To love and serve God and Man through Apostolic, Prophetic, Evangelistic, Pastoral and Teaching Ministries and Charitable Works, according to the strategy and plan of the Holy Spirit, to make every man perfect in Christ.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Footer directly at bottom -->
+            <footer class="bg-stone-100 border-t border-stone-200 mt-auto footer-mobile-stack">
+                <div class="flex flex-col md:flex-row justify-between items-start w-full px-4 sm:px-6 lg:px-12 py-8 sm:py-12 gap-8 sm:gap-12 max-w-[1440px] mx-auto">
+                    <div class="flex flex-col gap-6 sm:gap-8 max-w-sm">
+                        <div id="secret-trigger-text" class="select-none cursor-default outline-none">
+                            <div class="text-lg sm:text-xl font-bold text-stone-900 mb-2">THE GATHERING</div>
+                            <p class="font-epilogue text-[9px] sm:text-[10px] uppercase tracking-widest text-stone-400 leading-relaxed">
+                                © 2024 THE GATHERING. A COMMUNITY GATHERED IN GRACE.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 gap-6 sm:gap-8 w-full md:w-auto">
+                        <div class="flex flex-col gap-3">
+                            <span class="font-epilogue text-[10px] uppercase tracking-widest font-bold text-stone-900">Explore</span>
+                            <a class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#stay-connected">Future Gatherings</a>
+                            <a class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#archive">Previous Gatherings</a>
+                            <a class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#locations">Locations</a>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <span class="font-epilogue text-[10px] uppercase tracking-widest font-bold text-stone-900">Social</span>
+                            <a id="footer-instagram-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Instagram</a>
+                            <a id="footer-facebook-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Facebook</a>
+                            <a id="footer-youtube-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">YouTube</a>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                            <span class="font-epilogue text-[10px] uppercase tracking-widest font-bold text-stone-900">Involved</span>
+                            <a id="footer-giving-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Giving</a>
+                            <a id="footer-contact-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Contact</a>
+                            <a id="footer-volunteer-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Volunteer</a>
+                        </div>
+                        <div class="flex flex-col gap-3 items-end md:items-start col-span-2 sm:col-span-1">
+                            <button class="material-symbols-outlined text-stone-400 hover:text-stone-900 text-2xl hover:translate-y-[-4px] transition-all duration-500" onclick="document.getElementById('main-scroll').scrollTo({top: 0, behavior: 'smooth'})">arrow_upward</button>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </section>
+    </main>
+
+    <!-- Scroll Reveal Observer -->
+    <script>
+        // Intersection Observer for scroll-reveal animations
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+        document.querySelectorAll('.reveal, .reveal-scale, .divider-animate').forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        // Glassmorphism nav scroll effect
+        const mainScroll = document.getElementById('main-scroll');
+        const navHeader = document.querySelector('.nav-glass');
+        if (mainScroll && navHeader) {
+            mainScroll.addEventListener('scroll', () => {
+                if (mainScroll.scrollTop > 80) {
+                    navHeader.classList.add('scrolled');
+                } else {
+                    navHeader.classList.remove('scrolled');
+                }
+            });
+        }
+
+        // Mobile hamburger menu toggle
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const mobileDrawer = document.getElementById('mobile-drawer');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+
+        function toggleMobileMenu(forceClose) {
+            const isOpen = forceClose || mobileDrawer.classList.contains('open');
+            if (isOpen) {
+                mobileDrawer.classList.remove('open');
+                mobileOverlay.classList.remove('open');
+                hamburgerBtn.classList.remove('active');
+                document.body.style.overflow = '';
+            } else {
+                mobileDrawer.classList.add('open');
+                mobileOverlay.classList.add('open');
+                hamburgerBtn.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', () => toggleMobileMenu());
+        }
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', () => toggleMobileMenu(true));
+        }
+
+        // Close drawer when a nav link is clicked
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                toggleMobileMenu(true);
+            });
+        });
+
+        // Disable snap scrolling on mobile for the main scroll container
+        function checkMobileSnap() {
+            if (window.innerWidth < 768) {
+                mainScroll.style.scrollSnapType = 'none';
+            } else {
+                mainScroll.style.scrollSnapType = 'y mandatory';
+            }
+        }
+        checkMobileSnap();
+        window.addEventListener('resize', checkMobileSnap);
+    </script>
+</body>
+</html>

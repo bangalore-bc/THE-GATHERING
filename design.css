@@ -1,0 +1,496 @@
+/* design.css */
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800;900&family=Inter:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+:root {
+  --primary: #0a0a0a;
+  --on-primary: #ffffff;
+  --background: #fafaf9;
+  --on-surface: #1a1c1c;
+  --secondary: #57534e;
+  --surface-low: #f5f5f4;
+  --stone-200: #e7e5e4;
+  --stone-800: #292524;
+  --stone-900: #1c1917;
+  --accent: #d4a574;
+  --accent-subtle: #f5e6d3;
+}
+
+/* ─── Base ─── */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background);
+  color: var(--on-surface);
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--primary);
+}
+
+section, .scroll-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Typography Helpers */
+.font-display { font-family: 'Epilogue', sans-serif; }
+.font-body { font-family: 'Inter', sans-serif; }
+
+/* ─── Glassmorphism Nav ─── */
+.nav-glass {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.nav-glass.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 24px rgba(0,0,0,0.06);
+}
+
+/* ─── Scroll-Reveal Animations ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Stagger delays for children */
+.stagger-1 { transition-delay: 0.1s; }
+.stagger-2 { transition-delay: 0.2s; }
+.stagger-3 { transition-delay: 0.3s; }
+.stagger-4 { transition-delay: 0.4s; }
+.stagger-5 { transition-delay: 0.5s; }
+
+/* ─── Hero Ken Burns (subtle zoom drift) ─── */
+@keyframes kenBurns {
+  0%   { transform: scale(1.0) translate(0, 0); }
+  50%  { transform: scale(1.06) translate(-0.5%, -0.5%); }
+  100% { transform: scale(1.0) translate(0, 0); }
+}
+.hero-bg-animate {
+  animation: kenBurns 25s ease-in-out infinite;
+}
+
+/* ─── Slideshow for meeting pages ─── */
+.slideshow-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+.slideshow-img.active {
+  opacity: 1;
+}
+
+/* ─── Button Micro-Interactions ─── */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.15);
+  transform: translateX(-101%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-primary:hover::after {
+  transform: translateX(0);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+.btn-primary:active {
+  transform: translateY(0px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn-outline {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-outline:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.1);
+}
+
+/* ─── Card Hover Effects ─── */
+.card-lift {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* ─── Testimonial Card Hover ─── */
+.testimonial-card {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.5s ease;
+}
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+  border-color: var(--accent);
+}
+
+/* ─── Smooth Image Reveal ─── */
+.img-reveal {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.img-reveal.visible {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ─── Section Divider Line Animation ─── */
+.divider-animate {
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.divider-animate.visible {
+  width: 100%;
+}
+
+/* ─── Countdown Number Pulse ─── */
+@keyframes countdownPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.7; }
+}
+.countdown-digit {
+  animation: countdownPulse 1s ease-in-out infinite;
+}
+
+/* ─── Social Link Hover Slide ─── */
+.social-row {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.social-row::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--primary);
+  transform: scaleY(0);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.social-row:hover::before {
+  transform: scaleY(1);
+}
+.social-row:hover {
+  padding-left: 12px;
+}
+
+/* ─── Meeting Photo Parallax ─── */
+.parallax-photo {
+  transition: transform 0.1s linear;
+}
+
+/* ─── Scrollbar Styling ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a29e;
+}
+
+/* ─── Legacy Helpers ─── */
+.gallery-mask {
+  clip-path: inset(0 0 0 0);
+}
+.hero-container {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 3rem;
+  height: 100%;
+}
+.hero-image-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  max-height: calc(100vh - 80px);
+}
+.hero-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 16px;
+}
+.hero-text {
+  flex: 1;
+  border-left: 4px solid var(--primary);
+  padding-left: 3rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE-FIRST RESPONSIVE SYSTEM
+   ══════════════════════════════════════════════════════════════ */
+
+/* ─── Mobile Hamburger Menu ─── */
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  z-index: 60;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+.mobile-menu-btn span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--on-surface);
+  border-radius: 2px;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease;
+}
+.mobile-menu-btn.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.mobile-menu-btn.active span:nth-child(2) {
+  opacity: 0;
+}
+.mobile-menu-btn.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ─── Mobile Nav Drawer ─── */
+.mobile-nav-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  z-index: 55;
+  transform: translateX(100%);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 100px 32px 40px;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.08);
+}
+.mobile-nav-drawer.open {
+  transform: translateX(0);
+}
+.mobile-nav-drawer a {
+  font-family: 'Epilogue', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--secondary);
+  padding: 16px 0;
+  border-bottom: 1px solid var(--stone-200);
+  text-decoration: none;
+  transition: color 0.3s ease, padding-left 0.3s ease;
+}
+.mobile-nav-drawer a:hover,
+.mobile-nav-drawer a:active {
+  color: var(--primary);
+  padding-left: 8px;
+}
+.mobile-nav-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 54;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.mobile-nav-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ─── Locations Mobile Stacked Layout ─── */
+.locations-mobile-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.locations-mobile-stack > div {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 240px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PHONE: up to 767px
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* Disable scroll snapping on mobile for natural scrolling */
+  html, body {
+    scroll-snap-type: none;
+  }
+  .scroll-section,
+  section {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+    min-height: auto;
+  }
+
+  /* Show hamburger, hide desktop nav links */
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  /* Nav adjustments */
+  .nav-glass nav {
+    padding: 12px 16px;
+  }
+  .nav-glass {
+    background: rgba(255, 255, 255, 0.92);
+  }
+
+  /* Hero section — phone optimized */
+  .hero-mobile-optimize {
+    min-height: 100svh;
+    padding: 80px 20px 32px;
+  }
+  .hero-mobile-optimize .border-l-4 {
+    border-left-width: 3px;
+    padding-left: 20px;
+  }
+
+  /* Meetings cards on mobile */
+  .meeting-card-mobile {
+    min-height: 280px !important;
+  }
+
+  /* Footer mobile */
+  .footer-mobile-stack .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  /* Reduce card-lift effect on touch */
+  .card-lift:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .card-lift:active {
+    transform: scale(0.98);
+    transition: transform 0.15s ease;
+  }
+
+  /* Testimonial card — no hover transform on touch */
+  .testimonial-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TABLET: 768px – 1023px
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  html, body {
+    scroll-snap-type: y proximity;
+  }
+
+  .hero-container {
+    gap: 2rem;
+    padding: 0 2rem;
+  }
+  .hero-text {
+    padding-left: 2rem;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Small phones: up to 374px (iPhone SE, etc.)
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 374px) {
+  .nav-glass nav {
+    padding: 10px 12px;
+  }
+}

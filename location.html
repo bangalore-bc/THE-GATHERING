@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <title>Location - The Gathering</title>
+    <link rel="stylesheet" href="design.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "label-bold": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = parseInt(urlParams.get('id'));
+
+            if (!id) {
+                document.getElementById('loc-content').innerHTML = '<p class="text-xl text-white">Location not found.</p>';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/data');
+                if (res.ok) {
+                    const data = await res.json();
+                    const loc = data.locations.find(l => l.id === id);
+
+                    if (loc) {
+                        document.title = `${loc.name} - The Gathering`;
+                        const photoUrl = loc.photo ? (loc.photo.startsWith('http') ? loc.photo : loc.photo) : 'img/placeholder.jpg';
+                        document.getElementById('l-bg').src = photoUrl;
+                        document.getElementById('l-tag').innerText = loc.tag;
+                        document.getElementById('l-name').innerText = loc.name;
+                        document.getElementById('l-desc').innerText = loc.description;
+                        
+                        const linksContainer = document.getElementById('l-links');
+                        linksContainer.innerHTML = '';
+                        if (loc.mapLink) {
+                            linksContainer.innerHTML += `
+                                <a href="${loc.mapLink}" target="_blank" class="bg-white text-black px-5 sm:px-8 py-3 sm:py-4 font-label-bold text-[10px] sm:text-xs uppercase tracking-widest hover:bg-stone-200 transition flex items-center gap-2 rounded-xl sm:rounded-none w-full sm:w-auto justify-center sm:justify-start">
+                                    <span class="material-symbols-outlined text-lg sm:text-base">map</span> View on Google Maps
+                                </a>
+                            `;
+                        }
+                    } else {
+                        document.getElementById('loc-content').innerHTML = '<p class="text-xl text-white">Location not found in our records.</p>';
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loc-content').innerHTML = '<p class="text-xl text-red-400">Failed to load location data.</p>';
+            }
+        });
+    </script>
+</head>
+<body class="bg-stone-900 text-white font-body-md overflow-x-hidden">
+    <!-- Transparent Navbar -->
+    <header class="fixed top-0 left-0 right-0 z-50 py-3 sm:py-4 px-4 sm:px-6 md:px-12">
+        <div class="max-w-[1440px] mx-auto flex justify-between items-center">
+            <a href="eg.html#locations" class="flex items-center gap-2 sm:gap-4 hover:opacity-80 transition text-white">
+                <span class="material-symbols-outlined text-xl sm:text-2xl">arrow_back</span>
+                <span class="font-label-bold uppercase text-[10px] sm:text-sm tracking-widest">Back to Locations</span>
+            </a>
+            <div class="text-xl font-black tracking-tighter">
+                <img alt="The Gathering Logo" class="h-6 sm:h-8 w-auto object-contain brightness-0 invert" src="img/Gathering.png">
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full min-h-screen relative flex items-center justify-center pt-16 sm:pt-20 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-12 bg-stone-900">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img id="l-bg" alt="Location Background" class="w-full h-full object-cover opacity-60" src="">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+        </div>
+
+        <!-- Content Overlay -->
+        <div id="loc-content" class="max-w-[1440px] w-full mx-auto relative z-10 flex flex-col justify-end h-full min-h-[60vh]">
+            <div class="border-l-[3px] sm:border-l-4 border-white pl-5 sm:pl-8 lg:pl-12 max-w-4xl">
+                <span id="l-tag" class="font-label-bold text-xs sm:text-sm uppercase text-stone-300 tracking-widest mb-3 sm:mb-4 block">Loading...</span>
+                <h1 id="l-name" class="font-display text-3xl sm:text-5xl lg:text-8xl font-extrabold uppercase mb-4 sm:mb-6 tracking-tighter leading-[1.05] sm:leading-none text-white drop-shadow-lg">
+                    Loading...
+                </h1>
+                <p id="l-desc" class="font-body-lg text-base sm:text-xl lg:text-2xl max-w-2xl text-stone-200 mb-8 sm:mb-12 drop-shadow">
+                    
+                </p>
+                
+                <div id="l-links" class="flex flex-wrap gap-4 mt-4 sm:mt-8">
+                    <!-- Links injected here -->
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <title>Voice - The Gathering</title>
+    <link rel="stylesheet" href="design.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "label-bold": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = parseInt(urlParams.get('id'));
+
+            if (!id) {
+                document.getElementById('speaker-content').innerHTML = '<p class="text-xl">Speaker not found.</p>';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/data');
+                if (res.ok) {
+                    const data = await res.json();
+                    const speaker = data.speakers.find(s => s.id === id);
+
+                    if (speaker) {
+                        document.title = `${speaker.name} - The Gathering`;
+                        document.getElementById('s-photo').src = speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg';
+                        document.getElementById('s-title').innerText = speaker.title;
+                        document.getElementById('s-name').innerText = speaker.name;
+                        document.getElementById('s-about').innerText = speaker.about;
+                        
+                        const socialsContainer = document.getElementById('s-socials');
+                        socialsContainer.innerHTML = '';
+                        if (speaker.socials) {
+                            if (speaker.socials.ig) {
+                                socialsContainer.innerHTML += `<a href="${speaker.socials.ig}" target="_blank" class="flex items-center gap-2 hover:text-stone-900 text-stone-500 transition"><span class="material-symbols-outlined text-xl">photo_camera</span> <span class="text-xs sm:text-sm font-bold uppercase tracking-widest">Instagram</span></a>`;
+                            }
+                            if (speaker.socials.tw) {
+                                socialsContainer.innerHTML += `<a href="${speaker.socials.tw}" target="_blank" class="flex items-center gap-2 hover:text-stone-900 text-stone-500 transition"><span class="material-symbols-outlined text-xl">tag</span> <span class="text-xs sm:text-sm font-bold uppercase tracking-widest">Twitter</span></a>`;
+                            }
+                        }
+                    } else {
+                        document.getElementById('speaker-content').innerHTML = '<p class="text-xl">Speaker not found in the collective.</p>';
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('speaker-content').innerHTML = '<p class="text-xl text-red-500">Failed to load speaker data.</p>';
+            }
+        });
+    </script>
+</head>
+<body class="bg-[#f9f9f9] text-stone-900 font-body-md">
+    <!-- Navbar -->
+    <header class="bg-white border-b-2 border-stone-200 py-3 sm:py-4 px-4 sm:px-6 md:px-12 fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-[1440px] mx-auto flex justify-between items-center">
+            <a href="speakers.html" class="flex items-center gap-2 sm:gap-4 hover:opacity-80 transition">
+                <span class="material-symbols-outlined text-xl sm:text-2xl">arrow_back</span>
+                <span class="font-label-bold uppercase text-[10px] sm:text-sm tracking-widest">All Voices</span>
+            </a>
+            <div class="text-xl font-black tracking-tighter">
+                <img alt="The Gathering Logo" class="h-6 sm:h-8 w-auto object-contain brightness-0" src="img/Gathering.png">
+            </div>
+        </div>
+    </header>
+
+    <main class="min-h-screen pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-6 md:px-12 flex items-center justify-center">
+        <div id="speaker-content" class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
+            <!-- Left Photo -->
+            <div class="w-full">
+                <img id="s-photo" src="" alt="Speaker Photo" class="w-full aspect-[4/5] object-cover rounded-2xl grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl">
+            </div>
+            <!-- Right Details -->
+            <div class="flex flex-col justify-center border-l-[3px] sm:border-l-4 border-black pl-5 sm:pl-8 lg:pl-12">
+                <span id="s-title" class="font-label-bold text-xs sm:text-sm uppercase text-stone-500 tracking-widest mb-3 sm:mb-4 block">Loading...</span>
+                <h1 id="s-name" class="font-display text-3xl sm:text-5xl lg:text-7xl font-bold uppercase tracking-tighter mb-6 sm:mb-8">Loading...</h1>
+                <p id="s-about" class="font-body-md text-base sm:text-lg text-stone-600 leading-relaxed max-w-2xl whitespace-pre-wrap"></p>
+                
+                <div id="s-socials" class="flex flex-wrap gap-4 sm:gap-6 mt-6 sm:mt-8">
+                    <!-- Dynamic Socials -->
+                </div>
+                
+                <div class="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-stone-200 flex gap-4">
+                    <button class="bg-black text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-label-bold text-[10px] sm:text-xs uppercase tracking-widest hover:bg-stone-800 transition">Share Profile</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

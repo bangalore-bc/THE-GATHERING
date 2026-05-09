@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <title>All Voices - The Gathering</title>
+    <link rel="stylesheet" href="design.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "label-bold": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/api/data');
+                if (res.ok) {
+                    const data = await res.json();
+                    const container = document.getElementById('all-speakers');
+                    
+                    if (data.speakers && data.speakers.length > 0) {
+                        data.speakers.forEach((speaker, index) => {
+                            const isEven = index % 2 === 0;
+                            const el = document.createElement('div');
+                            el.className = "flex flex-col md:flex-row items-center gap-8 sm:gap-12 lg:gap-24 w-full";
+                            
+                            const numberStr = (index + 1).toString().padStart(2, '0');
+                            const buttonText = isEven ? 'Latest Message' : 'Portfolio Review';
+                            const defaultAbout = 'Specializing in their respective fields, they translate spiritual concepts into impactful experiences. Their work emphasizes the removal of the superfluous to reveal the inherent truth in raw, unadorned materials.';
+                            
+                            const textContent = `
+                                <div class="flex-1 flex flex-col justify-center ${isEven ? 'order-2 md:order-1 pr-0 md:pr-12' : 'order-2 md:order-2 pl-0 md:pl-12'}">
+                                    <div class="flex items-center gap-4 mb-4 sm:mb-6">
+                                        <span class="font-label-bold text-stone-300 text-base sm:text-lg">${numberStr}</span>
+                                        ${!isEven ? '<div class="h-[2px] bg-stone-900 w-full max-w-[80px] sm:max-w-[120px]"></div>' : ''}
+                                    </div>
+                                    <h3 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold uppercase mb-2 text-stone-900 tracking-tighter">${speaker.name}</h3>
+                                    <span class="font-label-bold text-[10px] uppercase text-stone-500 tracking-widest block mb-6 sm:mb-8">${speaker.title}</span>
+                                    <p class="font-body-md text-stone-600 text-sm leading-relaxed mb-6 sm:mb-10 max-w-md">
+                                        ${speaker.about || defaultAbout}
+                                    </p>
+                                    <div class="flex items-center gap-6 mt-2">
+                                        ${speaker.socials && speaker.socials.yt ? `<a href="${speaker.socials.yt}" target="_blank" class="text-stone-400 hover:text-black transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12l-6.5-3.5v7l6.5-3.5z"></path><rect x="2" y="6" width="20" height="12" rx="2" ry="2" stroke-linecap="round" stroke-linejoin="round"></rect></svg></a>` : ''}
+                                        ${speaker.socials && speaker.socials.fb ? `<a href="${speaker.socials.fb}" target="_blank" class="text-stone-400 hover:text-black transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path></svg></a>` : ''}
+                                        ${speaker.socials && speaker.socials.ig ? `<a href="${speaker.socials.ig}" target="_blank" class="text-stone-400 hover:text-black transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path stroke-linecap="round" stroke-linejoin="round" d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>` : ''}
+                                    </div>
+                                </div>
+                            `;
+
+                            const imageContent = `
+                                <div class="flex-1 w-full ${isEven ? 'order-1 md:order-2' : 'order-1 md:order-1'}">
+                                    <div class="${isEven ? 'aspect-square w-full md:w-[110%] ml-auto rounded-2xl overflow-hidden' : 'aspect-[3/2] w-full bg-stone-200 p-4 sm:p-8 lg:p-12 flex items-center justify-center rounded-2xl'}">
+                                        <img src="${speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg'}" alt="${speaker.name}" class="w-full h-full object-cover shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 rounded-2xl">
+                                    </div>
+                                </div>
+                            `;
+
+                            el.innerHTML = isEven ? textContent + imageContent : imageContent + textContent;
+                            container.appendChild(el);
+                        });
+                    } else {
+                        container.innerHTML = '<p class="col-span-full text-center text-stone-500 py-12">No voices found.</p>';
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('all-speakers').innerHTML = '<p class="col-span-full text-center text-red-500 py-12">Failed to load voices. Ensure backend is running.</p>';
+            }
+        });
+    </script>
+</head>
+<body class="bg-[#f9f9f9] text-stone-900 font-body-md">
+    <!-- Simple Navbar -->
+    <header class="bg-white border-b-2 border-stone-200 py-3 sm:py-4 px-4 sm:px-6 md:px-12">
+        <div class="max-w-[1440px] mx-auto flex justify-between items-center">
+            <a href="eg.html" class="flex items-center gap-2 sm:gap-4 hover:opacity-80 transition">
+                <span class="material-symbols-outlined text-xl sm:text-2xl">arrow_back</span>
+                <span class="font-label-bold uppercase text-[10px] sm:text-sm tracking-widest">Back to Gathering</span>
+            </a>
+            <div class="text-xl font-black tracking-tighter">
+                <img alt="The Gathering Logo" class="h-6 sm:h-8 w-auto object-contain brightness-0" src="img/Gathering.png">
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1440px] mx-auto py-12 sm:py-24 px-4 sm:px-6 md:px-12 min-h-screen">
+        <h1 class="font-display text-3xl sm:text-5xl md:text-7xl font-bold uppercase tracking-tighter mb-10 sm:mb-16 border-l-[3px] sm:border-l-4 border-black pl-5 sm:pl-8">The Collective Voices</h1>
+        
+        <div id="all-speakers" class="flex flex-col gap-16 sm:gap-24 lg:gap-32 py-6 sm:py-12">
+            <!-- Dynamic Content -->
+        </div>
+    </main>
+</body>
+</html>

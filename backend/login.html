@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - THE GATHERING</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/design.css">
+</head>
+<body class="bg-stone-50 h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white p-8 sm:p-12 rounded-3xl shadow-2xl border border-stone-100">
+        <div class="text-center mb-8">
+            <span class="font-label-bold text-[10px] uppercase tracking-widest text-stone-400 block mb-2">Admin Portal</span>
+            <h1 class="font-display text-3xl sm:text-4xl font-bold uppercase tracking-tighter text-stone-900">Sign In</h1>
+        </div>
+        
+        <form id="login-form" class="space-y-5">
+            <div>
+                <label class="block text-[10px] sm:text-xs uppercase tracking-widest font-bold text-stone-400 mb-2">User ID</label>
+                <input type="text" id="user-id" class="w-full border border-stone-300 rounded-xl p-3 text-sm focus:border-stone-900 focus:ring-stone-900 transition-colors outline-none" required>
+            </div>
+            <div>
+                <label class="block text-[10px] sm:text-xs uppercase tracking-widest font-bold text-stone-400 mb-2">Password</label>
+                <input type="password" id="password" class="w-full border border-stone-300 rounded-xl p-3 text-sm focus:border-stone-900 focus:ring-stone-900 transition-colors outline-none" required>
+            </div>
+            <p id="error-msg" class="text-sm text-red-500 font-medium text-center hidden"></p>
+            <button type="submit" class="w-full bg-black text-white font-label-bold text-[10px] sm:text-xs uppercase tracking-widest py-3.5 sm:py-4 rounded-xl hover:bg-stone-800 transition-colors duration-300 mt-4">Authenticate</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('user-id').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            
+            errorMsg.classList.add('hidden');
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = 'Verifying...';
+            
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, password })
+                });
+                if (res.ok) {
+                    window.location.href = '/admin.html';
+                } else {
+                    const err = await res.json();
+                    errorMsg.textContent = err.error || 'Invalid credentials';
+                    errorMsg.classList.remove('hidden');
+                    btn.textContent = originalText;
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Server connection error';
+                errorMsg.classList.remove('hidden');
+                btn.textContent = originalText;
+            }
+        });
+    </script>
+</body>
+</html>

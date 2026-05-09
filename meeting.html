@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <title>Meeting - The Gathering</title>
+    <link rel="stylesheet" href="design.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800;900&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container": "#eeeeee",
+                        "on-primary-container": "#858383",
+                        "outline-variant": "#c4c7c7",
+                        "on-surface-variant": "#444748",
+                        "background": "#f9f9f9",
+                        "primary": "#000000",
+                        "on-primary": "#ffffff",
+                        "secondary": "#5d5f5d",
+                        "on-background": "#1a1c1c",
+                        "surface": "#f9f9f9",
+                        "outline": "#747878"
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "headline-lg": ["Epilogue"],
+                        "headline-md": ["Epilogue"],
+                        "headline-sm": ["Epilogue"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "label-bold": ["Inter", "sans-serif"],
+                        "label-sm": ["Inter", "sans-serif"],
+                        "epilogue": ["Epilogue", "sans-serif"]
+                    },
+                    fontSize: {
+                        "display": ["84px", { "lineHeight": "92px", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "headline-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-sm": ["24px", { "lineHeight": "32px", "letterSpacing": "0", "fontWeight": "600" }],
+                        "body-lg": ["20px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "26px", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-bold": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }]
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .progress-bar { height: 2px; background: rgba(255,255,255,0.2); position: relative; overflow: hidden; border-radius: 1px; }
+        .progress-bar-fill { position: absolute; top: 0; left: 0; bottom: 0; background: white; transition: width 0.3s linear; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased">
+
+    <!-- Hero Section with Slideshow + Title Overlay -->
+    <section class="relative w-full h-[70vh] sm:h-screen overflow-hidden flex flex-col justify-end bg-black">
+        <div id="slideshow-container" class="absolute inset-0 z-0"></div>
+        <div class="absolute inset-0 z-10 pointer-events-none">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent"></div>
+        </div>
+
+        <!-- Nav -->
+        <header class="absolute top-0 left-0 right-0 z-30">
+            <nav class="flex justify-between items-center h-16 sm:h-24 px-4 sm:px-6 lg:px-12 max-w-screen-2xl mx-auto">
+                <a href="eg.html" class="flex items-center gap-2 sm:gap-3 text-white/60 hover:text-white transition-all duration-500 group">
+                    <span class="material-symbols-outlined text-lg sm:text-xl group-hover:-translate-x-1 transition-transform duration-300">arrow_back</span>
+                    <span class="font-label-bold uppercase text-[10px] sm:text-xs tracking-widest">Back</span>
+                </a>
+                <img alt="The Gathering Logo" class="h-6 sm:h-8 w-auto object-contain invert brightness-0 opacity-70" src="img/Gathering.png">
+            </nav>
+        </header>
+
+        <!-- Title + Number + Location ON the hero -->
+        <div class="relative z-20 max-w-screen-2xl w-full mx-auto px-4 sm:px-6 lg:px-12 pb-8 sm:pb-20">
+            <span id="meeting-tag" class="font-label-bold text-[10px] uppercase tracking-widest text-white/40 block mb-2 sm:mb-4">Past Gathering</span>
+            <div class="flex items-end gap-3 sm:gap-8">
+                <span id="meeting-num" class="font-display text-[60px] sm:text-[120px] lg:text-[160px] font-bold text-white/10 leading-none -mb-1 sm:-mb-3 hidden sm:block">01</span>
+                <div>
+                    <h1 id="meeting-title" class="font-display text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold uppercase tracking-tighter text-white leading-none mb-2 sm:mb-4"></h1>
+                    <span id="meeting-location-label" class="font-label-bold text-[10px] uppercase tracking-widest text-white/50"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress bars -->
+        <div id="slideshow-progress" class="absolute bottom-0 left-0 right-0 z-20 px-4 sm:px-12 pb-3 sm:pb-6">
+            <div class="max-w-screen-2xl mx-auto flex gap-1 sm:gap-2"></div>
+        </div>
+    </section>
+
+    <main>
+        <!-- Content Section: Decorative element + Description -->
+        <section id="content-section" class="py-12 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-12 max-w-screen-2xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-8 gap-y-8 sm:gap-y-16">
+                <!-- Left: decorative vertical line + short description -->
+                <div class="col-span-1 lg:col-span-4 relative">
+                    <div class="lg:sticky lg:top-40">
+                        <div class="w-px h-16 sm:h-24 bg-stone-300 mb-6 sm:mb-8 hidden lg:block"></div>
+                        <p id="meeting-short-desc" class="font-headline-sm text-lg sm:text-headline-sm text-secondary max-w-sm"></p>
+                        <div class="w-16 sm:w-24 h-px bg-stone-300 mt-6 sm:mt-8"></div>
+                    </div>
+                </div>
+                <!-- Right: Long description, properly parsed -->
+                <div id="narrative-body" class="col-span-1 lg:col-span-7 lg:col-start-6 space-y-6 sm:space-y-8">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section id="testimonials-section" class="py-12 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-12 bg-surface-container">
+            <div class="max-w-screen-2xl mx-auto">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-10 sm:mb-24">
+                    <h2 class="font-headline-md text-2xl sm:text-headline-md uppercase">Testimonials</h2>
+                    <span id="testimonial-count" class="font-label-bold text-label-bold text-on-primary-container uppercase"></span>
+                </div>
+                <div id="testimonials-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 sm:gap-x-16 gap-y-8 sm:gap-y-12 px-0 sm:px-4 md:px-8">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Upcoming / Future Section -->
+        <section id="upcoming-section" class="py-12 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-12 border-t border-outline-variant bg-white">
+            <div class="max-w-screen-2xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Left: Location Module -->
+                    <div class="col-span-1 lg:col-span-7">
+                        <span class="font-label-bold text-label-bold text-on-primary-container uppercase mb-4 sm:mb-6 block">Next Gathering</span>
+                        <div id="upcoming-location" class="relative rounded-2xl overflow-hidden bg-stone-100 min-h-[280px] sm:min-h-[400px]">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                    <!-- Right: Calendar Sidebar -->
+                    <div class="col-span-1 lg:col-span-4 lg:col-start-9">
+                        <span class="font-label-bold text-label-bold text-on-primary-container uppercase mb-6 sm:mb-8 block">Upcoming Events</span>
+                        <div id="upcoming-events-list" class="space-y-0">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-stone-100 border-t border-stone-200">
+        <div class="flex flex-col md:flex-row justify-between items-start w-full px-4 sm:px-6 lg:px-12 py-8 sm:py-12 gap-8 sm:gap-12 max-w-[1440px] mx-auto">
+            <div class="flex flex-col gap-6 sm:gap-8 max-w-sm">
+                <div>
+                    <div class="text-lg sm:text-xl font-bold text-stone-900 mb-2">THE GATHERING</div>
+                    <p class="font-epilogue text-[9px] sm:text-[10px] uppercase tracking-widest text-stone-400 leading-relaxed">
+                        © 2024 THE GATHERING. A COMMUNITY GATHERED IN GRACE.
+                    </p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 gap-6 sm:gap-8 w-full md:w-auto">
+                <div class="flex flex-col gap-3">
+                    <span class="font-epilogue text-[10px] uppercase tracking-widest font-bold text-stone-900">Explore</span>
+                    <a class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="eg.html#stay-connected">Future Gatherings</a>
+                    <a class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="eg.html#archive">Previous Gatherings</a>
+                    <a class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="eg.html#locations">Locations</a>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <span class="font-epilogue text-[10px] uppercase tracking-widest font-bold text-stone-900">Social</span>
+                    <a id="footer-instagram-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Instagram</a>
+                    <a id="footer-facebook-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Facebook</a>
+                    <a id="footer-youtube-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">YouTube</a>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <span class="font-epilogue text-[10px] uppercase tracking-widest font-bold text-stone-900">Involved</span>
+                    <a id="footer-giving-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Giving</a>
+                    <a id="footer-contact-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Contact</a>
+                    <a id="footer-volunteer-link" class="font-epilogue text-[10px] uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors duration-500" href="#" target="_blank">Volunteer</a>
+                </div>
+                <div class="flex flex-col gap-3 items-end md:items-start col-span-2 sm:col-span-1">
+                    <button class="material-symbols-outlined text-stone-400 hover:text-stone-900 text-2xl hover:translate-y-[-4px] transition-all duration-500" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">arrow_upward</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const API_URL = '/api';
+        function resolvePhoto(url) { if (!url) return ''; if (url.startsWith('http')) return url; return url; }
+        document.addEventListener('DOMContentLoaded', async () => {
+            const id = new URLSearchParams(window.location.search).get('id');
+            if (!id) { document.getElementById('meeting-title').innerText = "Not Found"; return; }
+
+            try {
+                const res = await fetch(`${API_URL}/data`);
+                if (!res.ok) return;
+                const allData = await res.json();
+                const meetings = allData.meetings || [];
+                const meetingIndex = meetings.findIndex(m => m.id.toString() === id);
+                const meeting = meetings[meetingIndex];
+                if (!meeting) { document.getElementById('meeting-title').innerText = "Not Found"; return; }
+
+                document.title = `${meeting.title} — The Gathering`;
+
+                // Hero overlay: number, tag, title, location
+                const num = (meetingIndex + 1).toString().padStart(2, '0');
+                document.getElementById('meeting-num').innerText = num;
+                document.getElementById('meeting-tag').innerText = meeting.location ? `Past Gathering — ${meeting.location}` : 'Past Gathering';
+                document.getElementById('meeting-title').innerText = meeting.title;
+                document.getElementById('meeting-location-label').innerText = meeting.location || '';
+
+                // Short description (left side of content section)
+                document.getElementById('meeting-short-desc').innerText = meeting.description || '';
+
+                // Long description: properly parsed into paragraphs
+                const longDesc = meeting.longDescription || '';
+                const body = document.getElementById('narrative-body');
+                if (longDesc.trim()) {
+                    // Split by newlines (single or double) into paragraphs
+                    const paragraphs = longDesc.split(/\n+/).filter(p => p.trim());
+                    paragraphs.forEach((text, i) => {
+                        const p = document.createElement('p');
+                        if (i === 0) {
+                            p.className = 'font-body-lg text-base sm:text-body-lg leading-relaxed';
+                        } else {
+                            p.className = 'font-body-md text-sm sm:text-body-md text-on-surface-variant leading-relaxed';
+                        }
+                        p.textContent = text.trim();
+                        body.appendChild(p);
+                    });
+                } else if (meeting.description) {
+                    // Fallback: use short desc as content
+                    const p = document.createElement('p');
+                    p.className = 'font-body-lg text-base sm:text-body-lg leading-relaxed';
+                    p.textContent = meeting.description;
+                    body.appendChild(p);
+                } else {
+                    document.getElementById('content-section').style.display = 'none';
+                }
+
+                // Slideshow (hero) — uses slideshow images
+                const slc = document.getElementById('slideshow-container');
+                const prc = document.getElementById('slideshow-progress').querySelector('.flex');
+                const heroImages = [];
+                const slideshow = meeting.slideshow || [];
+                if (slideshow.length) heroImages.push(...slideshow.map(i => resolvePhoto(i)));
+                else if (meeting.photo) heroImages.push(resolvePhoto(meeting.photo));
+                else heroImages.push('img/placeholder.jpg');
+
+                heroImages.forEach((src, idx) => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'slideshow-img' + (idx === 0 ? ' active' : '');
+                    slc.appendChild(img);
+                });
+
+                if (heroImages.length > 1) {
+                    heroImages.forEach(() => {
+                        const bar = document.createElement('div');
+                        bar.className = 'progress-bar flex-1';
+                        bar.innerHTML = '<div class="progress-bar-fill" style="width:0%"></div>';
+                        prc.appendChild(bar);
+                    });
+                    const DUR = 6000; let cur = 0;
+                    const imgs = slc.querySelectorAll('.slideshow-img');
+                    const fills = prc.querySelectorAll('.progress-bar-fill');
+                    fills[0].style.transition = `width ${DUR}ms linear`;
+                    requestAnimationFrame(() => { fills[0].style.width = '100%'; });
+                    setInterval(() => {
+                        fills[cur].style.transition = 'none'; fills[cur].style.width = '100%';
+                        imgs[cur].classList.remove('active');
+                        cur = (cur + 1) % heroImages.length;
+                        imgs[cur].classList.add('active');
+                        if (cur === 0) fills.forEach(f => { f.style.transition = 'none'; f.style.width = '0%'; });
+                        requestAnimationFrame(() => { fills[cur].style.transition = `width ${DUR}ms linear`; fills[cur].style.width = '100%'; });
+                    }, DUR);
+                } else {
+                    document.getElementById('slideshow-progress').style.display = 'none';
+                }
+
+                // Testimonials
+                const testimonials = meeting.testimonials || [];
+                if (testimonials.length === 0) {
+                    document.getElementById('testimonials-section').style.display = 'none';
+                } else {
+                    document.getElementById('testimonial-count').textContent = `0${testimonials.length} Voices`;
+                    const tc = document.getElementById('testimonials-container');
+                    tc.innerHTML = '';
+                    testimonials.forEach((t, i) => {
+                        const n = (i + 1).toString().padStart(2, '0');
+                        const div = document.createElement('div');
+                        div.className = 'space-y-6 sm:space-y-8';
+                        div.innerHTML = `
+                            <span class="font-display text-3xl sm:text-headline-lg opacity-10">${n}</span>
+                            <p class="font-body-lg text-base sm:text-body-lg italic">"${t.text}"</p>
+                            <div class="font-label-bold text-label-bold uppercase">— ${t.name}${t.title ? ', ' + t.title : ''}</div>
+                        `;
+                        tc.appendChild(div);
+                    });
+                }
+
+                // Upcoming: first location module
+                const locations = allData.locations || [];
+                const upLoc = document.getElementById('upcoming-location');
+                if (locations.length > 0) {
+                    const loc = locations[0]; // First location = upcoming gathering
+                    const locPhoto = loc.photo ? `<img src="${resolvePhoto(loc.photo)}" class="absolute inset-0 w-full h-full object-cover">` : '';
+                    upLoc.innerHTML = `
+                        ${locPhoto}
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                        <div class="relative z-10 flex flex-col justify-end h-full p-5 sm:p-10">
+                            <span class="font-label-bold text-[10px] uppercase tracking-widest text-white/50 mb-2 sm:mb-3">${loc.tag || 'Upcoming Gathering'}</span>
+                            <h3 class="font-display text-xl sm:text-3xl lg:text-4xl font-bold uppercase text-white tracking-tighter mb-2 sm:mb-3">${loc.name}</h3>
+                            <p class="font-body-md text-sm sm:text-base text-white/70 max-w-lg mb-4 sm:mb-6">${loc.description || ''}</p>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-white/20 pt-4 sm:pt-6 mt-2 gap-3">
+                                ${loc.mapLink ? `<a href="${loc.mapLink}" target="_blank" class="inline-flex items-center gap-2 font-label-bold text-label-bold uppercase text-white hover:text-white/70 transition-colors duration-300"><span class="material-symbols-outlined text-base">location_on</span> View Location</a>` : '<div></div>'}
+                                ${allData.countdown ? `<span class="font-label-bold text-[10px] sm:text-label-bold uppercase text-white/70">${new Date(allData.countdown).toLocaleString('en-US', { weekday: 'long', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    upLoc.innerHTML = '<div class="flex items-center justify-center h-full text-stone-400 p-10">No location data available</div>';
+                }
+
+                // Upcoming: events calendar
+                const events = [...(allData.upcomingEvents || [])].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 3);
+                const evList = document.getElementById('upcoming-events-list');
+                if (events.length === 0) {
+                    evList.innerHTML = '<p class="text-stone-400 text-sm italic">No upcoming events scheduled.</p>';
+                } else {
+                    evList.innerHTML = '';
+                    events.forEach(ev => {
+                        const d = new Date(ev.date + 'T00:00:00');
+                        const month = d.toLocaleString('en-US', { month: 'short' });
+                        const day = d.getDate().toString().padStart(2, '0');
+                        const row = document.createElement('div');
+                        row.className = 'flex items-start gap-4 py-4 sm:py-5 border-l-2 border-stone-200 pl-4 sm:pl-6';
+                        row.innerHTML = `
+                            <div>
+                                <div class="font-display text-lg sm:text-xl font-bold leading-tight">${month} ${day}</div>
+                                <div class="font-body-md text-sm sm:text-base text-on-surface-variant mt-1 font-semibold">${ev.title}</div>
+                                ${ev.subtitle ? `<div class="font-body-md text-xs sm:text-sm text-stone-500 mt-0.5">${ev.subtitle}</div>` : ''}
+                            </div>
+                        `;
+                        evList.appendChild(row);
+                    });
+                }
+
+                // Dynamic Footer Links
+                if (allData.instagramUrl) {
+                    const el = document.getElementById('footer-instagram-link');
+                    if (el) el.href = allData.instagramUrl;
+                }
+                if (allData.facebookUrl) {
+                    const el = document.getElementById('footer-facebook-link');
+                    if (el) el.href = allData.facebookUrl;
+                }
+                if (allData.youtubeUrl) {
+                    const el = document.getElementById('footer-youtube-link');
+                    if (el) el.href = allData.youtubeUrl;
+                }
+                if (allData.givingUrl) {
+                    const el = document.getElementById('footer-giving-link');
+                    if (el) el.href = allData.givingUrl;
+                }
+                if (allData.contactUrl) {
+                    const el = document.getElementById('footer-contact-link');
+                    if (el) el.href = allData.contactUrl;
+                }
+                if (allData.volunteerUrl) {
+                    const el = document.getElementById('footer-volunteer-link');
+                    if (el) el.href = allData.volunteerUrl;
+                }
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('meeting-title').innerText = "Error";
+            }
+        });
+    </script>
+</body>
+</html>
