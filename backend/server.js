@@ -5,6 +5,8 @@ const path = require('path');
 const multer = require('multer');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
+const fs = require('fs');
+
 
 // --- Supabase Configuration ---
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://pdyaapafzvbgihipxmgs.supabase.co';
@@ -89,6 +91,8 @@ app.use((req, res, next) => {
 
 // Serve frontend static files from parent directory
 app.use(express.static(path.join(__dirname, '..')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // --- Default Data ---
 const defaultData = {
@@ -113,6 +117,34 @@ const defaultData = {
 
 // --- Supabase Data Helpers ---
 async function readData() {
+    if (process.env.USE_LOCAL_DB === 'true') {
+        const dataPath = path.join(__dirname, 'data.json');
+        if (!fs.existsSync(dataPath)) {
+            console.log('No local data.json yet, initializing with defaults...');
+            fs.writeFileSync(dataPath, JSON.stringify(defaultData, null, 2), 'utf8');
+            return { ...defaultData };
+        }
+        try {
+            let result = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+            let modified = false;
+            for (const key of Object.keys(defaultData)) {
+                if (result[key] === undefined) {
+                    result[key] = defaultData[key];
+                    modified = true;
+                }
+            }
+            if (!result.users || result.users.length === 0) {
+                result.users = defaultData.users;
+                modified = true;
+            }
+            if (modified) fs.writeFileSync(dataPath, JSON.stringify(result, null, 2), 'utf8');
+            return result;
+        } catch (e) {
+            console.error('Error reading local data.json:', e.message);
+            return { ...defaultData };
+        }
+    }
+
     const { data, error } = await supabase.from('site_data').select('data').eq('id', 'main').single();
     if (error || !data) {
         console.log('No data in Supabase yet, initializing with defaults...');
@@ -137,6 +169,16 @@ async function readData() {
 }
 
 async function writeData(data) {
+    if (process.env.USE_LOCAL_DB === 'true') {
+        const dataPath = path.join(__dirname, 'data.json');
+        try {
+            fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), 'utf8');
+        } catch (e) {
+            console.error('Error writing local data.json:', e.message);
+        }
+        return;
+    }
+
     const { error } = await supabase.from('site_data').upsert({ id: 'main', data, updated_at: new Date().toISOString() });
     if (error) console.error('Error writing data to Supabase:', error.message);
 }
@@ -145,6 +187,17 @@ async function writeData(data) {
 async function uploadFile(fileBuffer, originalName) {
     const ext = path.extname(originalName);
     const fileName = Date.now() + '-' + Math.round(Math.random() * 1E9) + ext;
+    
+    if (process.env.USE_LOCAL_DB === 'true') {
+        const uploadDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        const filePath = path.join(uploadDir, fileName);
+        fs.writeFileSync(filePath, fileBuffer);
+        return '/uploads/' + fileName;
+    }
+
     const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(fileName, fileBuffer, {
         contentType: getContentType(ext),
         upsert: false
@@ -155,7 +208,19 @@ async function uploadFile(fileBuffer, originalName) {
 }
 
 async function deleteFile(fileUrl) {
-    if (!fileUrl || !fileUrl.includes(STORAGE_BUCKET)) return;
+    if (!fileUrl) return;
+    if (process.env.USE_LOCAL_DB === 'true') {
+        if (fileUrl.startsWith('/uploads/')) {
+            const fileName = fileUrl.split('/uploads/').pop();
+            const filePath = path.join(__dirname, 'uploads', fileName);
+            if (fs.existsSync(filePath)) {
+                try { fs.unlinkSync(filePath); } catch(e) { console.error('Local delete error:', e.message); }
+            }
+        }
+        return;
+    }
+
+    if (!fileUrl.includes(STORAGE_BUCKET)) return;
     try {
         const filePath = fileUrl.split(`${STORAGE_BUCKET}/`).pop();
         if (filePath) await supabase.storage.from(STORAGE_BUCKET).remove([filePath]);
@@ -234,7 +299,7 @@ app.post('/api/hero', upload.single('heroPhoto'), async (req, res) => {
     const data = await readData();
     if (req.body.countdown) data.countdown = req.body.countdown;
     if (req.file) {
-        await deleteFile(data.heroPhoto);
+        if (data.heroPhoto) deleteFile(data.heroPhoto).catch(e => console.error(e));
         data.heroPhoto = await uploadFile(req.file.buffer, req.file.originalname);
     }
     await writeData(data);
@@ -274,7 +339,7 @@ app.put('/api/speakers/:id', upload.single('photoFile'), async (req, res) => {
     if (index !== -1) {
         const updated = JSON.parse(req.body.data);
         if (req.file) {
-            await deleteFile(data.speakers[index].photo);
+            if (data.speakers[index].photo) deleteFile(data.speakers[index].photo).catch(e => console.error(e));
             updated.photo = await uploadFile(req.file.buffer, req.file.originalname);
         } else {
             updated.photo = data.speakers[index].photo;
@@ -313,7 +378,7 @@ app.put('/api/locations/:id', upload.single('photoFile'), async (req, res) => {
     if (index !== -1) {
         const updated = JSON.parse(req.body.data);
         if (req.file) {
-            await deleteFile(data.locations[index].photo);
+            if (data.locations[index].photo) deleteFile(data.locations[index].photo).catch(e => console.error(e));
             updated.photo = await uploadFile(req.file.buffer, req.file.originalname);
         } else { updated.photo = data.locations[index].photo; }
         data.locations[index] = { ...data.locations[index], ...updated };
@@ -355,17 +420,27 @@ app.post('/api/meetings', upload.fields(meetingUploadFields), async (req, res) =
     const data = await readData();
     const meeting = JSON.parse(req.body.data);
     meeting.id = Date.now();
-    if (req.files && req.files['photoFile']) meeting.photo = await uploadFile(req.files['photoFile'][0].buffer, req.files['photoFile'][0].originalname);
-    meeting.slideshow = [];
+
+    const uploadPromises = [];
+    if (req.files && req.files['photoFile']) {
+        uploadPromises.push(uploadFile(req.files['photoFile'][0].buffer, req.files['photoFile'][0].originalname).then(url => meeting.photo = url));
+    }
     if (req.files && req.files['slideshowFiles']) {
-        for (const f of req.files['slideshowFiles']) { meeting.slideshow.push(await uploadFile(f.buffer, f.originalname)); }
+        uploadPromises.push(Promise.all(req.files['slideshowFiles'].map(f => uploadFile(f.buffer, f.originalname))).then(urls => meeting.slideshow = urls));
+    } else {
+        meeting.slideshow = [];
     }
     if (meeting.testimonials) {
-        for (let i = 0; i < meeting.testimonials.length; i++) {
+        meeting.testimonials.forEach((t, i) => {
             const key = 'testimonialPhoto' + i;
-            if (req.files && req.files[key]) meeting.testimonials[i].photo = await uploadFile(req.files[key][0].buffer, req.files[key][0].originalname);
-        }
+            if (req.files && req.files[key]) {
+                uploadPromises.push(uploadFile(req.files[key][0].buffer, req.files[key][0].originalname).then(url => meeting.testimonials[i].photo = url));
+            }
+        });
     }
+
+    await Promise.all(uploadPromises);
+
     data.meetings.push(meeting);
     await writeData(data);
     res.json({ success: true, meetings: data.meetings });
@@ -377,25 +452,39 @@ app.put('/api/meetings/:id', upload.fields(meetingUploadFields), async (req, res
     const index = data.meetings.findIndex(m => m.id === id);
     if (index !== -1) {
         const updated = JSON.parse(req.body.data);
+        const uploadPromises = [];
+
         if (req.files && req.files['photoFile']) {
-            await deleteFile(data.meetings[index].photo);
-            updated.photo = await uploadFile(req.files['photoFile'][0].buffer, req.files['photoFile'][0].originalname);
-        } else { updated.photo = data.meetings[index].photo; }
+            if (data.meetings[index].photo) deleteFile(data.meetings[index].photo).catch(e => console.error(e));
+            uploadPromises.push(uploadFile(req.files['photoFile'][0].buffer, req.files['photoFile'][0].originalname).then(url => updated.photo = url));
+        } else {
+            updated.photo = data.meetings[index].photo;
+        }
+
         if (req.files && req.files['slideshowFiles']) {
-            if (data.meetings[index].slideshow) { for (const f of data.meetings[index].slideshow) await deleteFile(f); }
-            updated.slideshow = [];
-            for (const f of req.files['slideshowFiles']) { updated.slideshow.push(await uploadFile(f.buffer, f.originalname)); }
-        } else { updated.slideshow = data.meetings[index].slideshow || []; }
+            if (data.meetings[index].slideshow) { 
+                Promise.all(data.meetings[index].slideshow.map(f => deleteFile(f))).catch(e => console.error(e)); 
+            }
+            uploadPromises.push(Promise.all(req.files['slideshowFiles'].map(f => uploadFile(f.buffer, f.originalname))).then(urls => updated.slideshow = urls));
+        } else {
+            updated.slideshow = data.meetings[index].slideshow || [];
+        }
+
         const oldTest = data.meetings[index].testimonials || [];
         if (updated.testimonials) {
-            for (let i = 0; i < updated.testimonials.length; i++) {
+            updated.testimonials.forEach((t, i) => {
                 const key = 'testimonialPhoto' + i;
                 if (req.files && req.files[key]) {
-                    if (oldTest[i] && oldTest[i].photo) await deleteFile(oldTest[i].photo);
-                    updated.testimonials[i].photo = await uploadFile(req.files[key][0].buffer, req.files[key][0].originalname);
-                } else if (oldTest[i] && oldTest[i].photo) { updated.testimonials[i].photo = oldTest[i].photo; }
-            }
+                    if (oldTest[i] && oldTest[i].photo) deleteFile(oldTest[i].photo).catch(e => console.error(e));
+                    uploadPromises.push(uploadFile(req.files[key][0].buffer, req.files[key][0].originalname).then(url => updated.testimonials[i].photo = url));
+                } else if (oldTest[i] && oldTest[i].photo) {
+                    updated.testimonials[i].photo = oldTest[i].photo;
+                }
+            });
         }
+
+        await Promise.all(uploadPromises);
+
         data.meetings[index] = { ...data.meetings[index], ...updated };
         await writeData(data);
         res.json({ success: true, meetings: data.meetings });
@@ -509,7 +598,14 @@ app.delete('/api/events/:id', async (req, res) => {
 });
 
 // --- Start Server ---
-app.listen(PORT, () => { console.log(`Server running on http://localhost:${PORT}`); });
+app.listen(PORT, () => { 
+    console.log(`Server running on http://localhost:${PORT}`); 
+    if (process.env.USE_LOCAL_DB === 'true') {
+        console.log('Mode: LOCAL Database (data.json)');
+    } else {
+        console.log('Mode: LIVE Supabase Database');
+    }
+});
 
 // Export for Vercel serverless
 module.exports = app;

@@ -95,18 +95,18 @@
     </section>
 
     <main>
-        <!-- Content Section: Decorative element + Description -->
+        <!-- Content Section: Pull-quote + Narrative -->
         <section id="content-section" class="py-12 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-12 max-w-screen-2xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-x-8 gap-y-8 sm:gap-y-16">
-                <!-- Left: decorative vertical line + short description -->
+                <!-- Left: Pull-quote sidebar -->
                 <div class="col-span-1 lg:col-span-4 relative">
                     <div class="lg:sticky lg:top-40">
                         <div class="w-px h-16 sm:h-24 bg-stone-300 mb-6 sm:mb-8 hidden lg:block"></div>
-                        <p id="meeting-short-desc" class="font-headline-sm text-lg sm:text-headline-sm text-secondary max-w-sm"></p>
+                        <p id="meeting-pullquote" class="font-display text-xl sm:text-2xl lg:text-3xl font-semibold text-stone-900 leading-snug tracking-tight max-w-sm"></p>
                         <div class="w-16 sm:w-24 h-px bg-stone-300 mt-6 sm:mt-8"></div>
                     </div>
                 </div>
-                <!-- Right: Long description, properly parsed -->
+                <!-- Right: Long description body -->
                 <div id="narrative-body" class="col-span-1 lg:col-span-7 lg:col-start-6 space-y-6 sm:space-y-8">
                     <!-- Injected by JS -->
                 </div>
@@ -126,24 +126,19 @@
             </div>
         </section>
 
-        <!-- Upcoming / Future Section -->
-        <section id="upcoming-section" class="py-12 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-12 border-t border-outline-variant bg-white">
-            <div class="max-w-screen-2xl mx-auto">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <!-- Left: Location Module -->
-                    <div class="col-span-1 lg:col-span-7">
-                        <span class="font-label-bold text-label-bold text-on-primary-container uppercase mb-4 sm:mb-6 block">Next Gathering</span>
-                        <div id="upcoming-location" class="relative rounded-2xl overflow-hidden bg-stone-100 min-h-[280px] sm:min-h-[400px]">
-                            <!-- Injected by JS -->
-                        </div>
-                    </div>
-                    <!-- Right: Calendar Sidebar -->
-                    <div class="col-span-1 lg:col-span-4 lg:col-start-9">
-                        <span class="font-label-bold text-label-bold text-on-primary-container uppercase mb-6 sm:mb-8 block">Upcoming Events</span>
-                        <div id="upcoming-events-list" class="space-y-0">
-                            <!-- Injected by JS -->
-                        </div>
-                    </div>
+        <!-- Upcoming / Future Section — Full-width dark design -->
+        <section id="upcoming-section" class="bg-stone-950 text-white overflow-hidden">
+            <!-- Next Gathering: Full-bleed hero -->
+            <div id="upcoming-location" class="relative min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] flex items-end cursor-pointer group">
+                <!-- Injected by JS -->
+            </div>
+            <!-- Upcoming Events: Horizontal strip -->
+            <div class="px-4 sm:px-6 lg:px-12 py-10 sm:py-16 max-w-screen-2xl mx-auto">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 sm:mb-12">
+                    <h3 class="font-display text-lg sm:text-xl font-bold uppercase tracking-wider text-white/40">Upcoming Events</h3>
+                </div>
+                <div id="upcoming-events-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <!-- Injected by JS -->
                 </div>
             </div>
         </section>
@@ -211,14 +206,14 @@
                 document.getElementById('meeting-title').innerText = meeting.title;
                 document.getElementById('meeting-location-label').innerText = meeting.location || '';
 
-                // Short description (left side of content section)
-                document.getElementById('meeting-short-desc').innerText = meeting.description || '';
+                // Pull-quote (sidebar) — uses pullQuote field, falls back to short description
+                const pullQuoteText = meeting.pullQuote || meeting.description || '';
+                document.getElementById('meeting-pullquote').innerText = pullQuoteText;
 
                 // Long description: properly parsed into paragraphs
                 const longDesc = meeting.longDescription || '';
                 const body = document.getElementById('narrative-body');
                 if (longDesc.trim()) {
-                    // Split by newlines (single or double) into paragraphs
                     const paragraphs = longDesc.split(/\n+/).filter(p => p.trim());
                     paragraphs.forEach((text, i) => {
                         const p = document.createElement('p');
@@ -231,7 +226,6 @@
                         body.appendChild(p);
                     });
                 } else if (meeting.description) {
-                    // Fallback: use short desc as content
                     const p = document.createElement('p');
                     p.className = 'font-body-lg text-base sm:text-body-lg leading-relaxed';
                     p.textContent = meeting.description;
@@ -301,47 +295,58 @@
                     });
                 }
 
-                // Upcoming: first location module
+                // Upcoming: first location — full-bleed hero
                 const locations = allData.locations || [];
                 const upLoc = document.getElementById('upcoming-location');
                 if (locations.length > 0) {
-                    const loc = locations[0]; // First location = upcoming gathering
+                    const loc = locations[0];
                     const locPhoto = loc.photo ? `<img src="${resolvePhoto(loc.photo)}" class="absolute inset-0 w-full h-full object-cover">` : '';
+                    const dateStr = allData.countdown ? new Date(allData.countdown).toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : '';
+                    upLoc.onclick = () => window.location.href = `location.html?id=${loc.id}`;
                     upLoc.innerHTML = `
                         ${locPhoto}
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                        <div class="relative z-10 flex flex-col justify-end h-full p-5 sm:p-10">
-                            <span class="font-label-bold text-[10px] uppercase tracking-widest text-white/50 mb-2 sm:mb-3">${loc.tag || 'Upcoming Gathering'}</span>
-                            <h3 class="font-display text-xl sm:text-3xl lg:text-4xl font-bold uppercase text-white tracking-tighter mb-2 sm:mb-3">${loc.name}</h3>
-                            <p class="font-body-md text-sm sm:text-base text-white/70 max-w-lg mb-4 sm:mb-6">${loc.description || ''}</p>
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-white/20 pt-4 sm:pt-6 mt-2 gap-3">
-                                ${loc.mapLink ? `<a href="${loc.mapLink}" target="_blank" class="inline-flex items-center gap-2 font-label-bold text-label-bold uppercase text-white hover:text-white/70 transition-colors duration-300"><span class="material-symbols-outlined text-base">location_on</span> View Location</a>` : '<div></div>'}
-                                ${allData.countdown ? `<span class="font-label-bold text-[10px] sm:text-label-bold uppercase text-white/70">${new Date(allData.countdown).toLocaleString('en-US', { weekday: 'long', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>` : ''}
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/10 group-hover:via-black/40 transition-all duration-700"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+                        <div class="relative z-10 w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-12 pb-10 sm:pb-16 lg:pb-20">
+                            <span class="font-label-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/40 block mb-3 sm:mb-4">${loc.tag || 'Next Gathering'}</span>
+                            <h3 class="font-display text-4xl sm:text-6xl lg:text-8xl font-bold uppercase text-white tracking-tighter leading-none mb-4 sm:mb-6">${loc.name}</h3>
+                            ${dateStr ? `<p class="font-body-md text-sm sm:text-base text-white/50 mb-6 sm:mb-8">${dateStr}</p>` : ''}
+                            <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+                                <span class="inline-flex items-center gap-2 bg-white text-black px-5 sm:px-7 py-2.5 sm:py-3 rounded-full font-label-bold text-[10px] sm:text-xs uppercase tracking-widest group-hover:bg-white/90 transition-colors duration-300">
+                                    Explore <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
+                                </span>
+                                ${loc.mapLink ? `<a href="${loc.mapLink}" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-2 font-label-bold text-[10px] sm:text-xs uppercase tracking-widest text-white/50 hover:text-white transition-colors duration-300 border border-white/20 hover:border-white/50 px-5 py-2.5 rounded-full"><span class="material-symbols-outlined text-sm">location_on</span> Map</a>` : ''}
                             </div>
                         </div>
                     `;
                 } else {
-                    upLoc.innerHTML = '<div class="flex items-center justify-center h-full text-stone-400 p-10">No location data available</div>';
+                    upLoc.innerHTML = '<div class="flex items-center justify-center h-full text-white/30 p-10">No location data available</div>';
                 }
 
-                // Upcoming: events calendar
+                // Upcoming: events — dark card grid
                 const events = [...(allData.upcomingEvents || [])].sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 3);
                 const evList = document.getElementById('upcoming-events-list');
                 if (events.length === 0) {
-                    evList.innerHTML = '<p class="text-stone-400 text-sm italic">No upcoming events scheduled.</p>';
+                    evList.innerHTML = '<p class="text-white/30 text-sm italic col-span-full">No upcoming events scheduled.</p>';
                 } else {
                     evList.innerHTML = '';
                     events.forEach(ev => {
                         const d = new Date(ev.date + 'T00:00:00');
-                        const month = d.toLocaleString('en-US', { month: 'short' });
+                        const month = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
                         const day = d.getDate().toString().padStart(2, '0');
+                        const weekday = d.toLocaleString('en-US', { weekday: 'short' });
                         const row = document.createElement('div');
-                        row.className = 'flex items-start gap-4 py-4 sm:py-5 border-l-2 border-stone-200 pl-4 sm:pl-6';
+                        row.className = 'bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl p-5 sm:p-6 transition-all duration-500 flex items-center gap-5 sm:gap-6';
                         row.innerHTML = `
-                            <div>
-                                <div class="font-display text-lg sm:text-xl font-bold leading-tight">${month} ${day}</div>
-                                <div class="font-body-md text-sm sm:text-base text-on-surface-variant mt-1 font-semibold">${ev.title}</div>
-                                ${ev.subtitle ? `<div class="font-body-md text-xs sm:text-sm text-stone-500 mt-0.5">${ev.subtitle}</div>` : ''}
+                            <div class="flex-shrink-0 w-14 sm:w-16 text-center">
+                                <div class="font-label-bold text-[10px] uppercase tracking-widest text-white/40">${month}</div>
+                                <div class="font-display text-3xl sm:text-4xl font-bold text-white leading-none mt-1">${day}</div>
+                                <div class="font-label-bold text-[9px] uppercase tracking-wider text-white/30 mt-1">${weekday}</div>
+                            </div>
+                            <div class="w-px h-10 bg-white/10 flex-shrink-0"></div>
+                            <div class="min-w-0">
+                                <div class="font-display text-sm sm:text-base font-semibold text-white truncate">${ev.title}</div>
+                                ${ev.subtitle ? `<div class="font-body-md text-xs sm:text-sm text-white/40 mt-1 truncate">${ev.subtitle}</div>` : ''}
                             </div>
                         `;
                         evList.appendChild(row);

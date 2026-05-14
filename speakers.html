@@ -30,7 +30,8 @@
                         data.speakers.forEach((speaker, index) => {
                             const isEven = index % 2 === 0;
                             const el = document.createElement('div');
-                            el.className = "flex flex-col md:flex-row items-center gap-8 sm:gap-12 lg:gap-24 w-full";
+                            el.id = `speaker-${speaker.id}`;
+                            el.className = "flex flex-col md:flex-row items-center gap-8 sm:gap-12 lg:gap-24 w-full scroll-mt-24";
                             
                             const numberStr = (index + 1).toString().padStart(2, '0');
                             const buttonText = isEven ? 'Latest Message' : 'Portfolio Review';
@@ -57,8 +58,8 @@
 
                             const imageContent = `
                                 <div class="flex-1 w-full ${isEven ? 'order-1 md:order-2' : 'order-1 md:order-1'}">
-                                    <div class="${isEven ? 'aspect-square w-full md:w-[110%] ml-auto rounded-2xl overflow-hidden' : 'aspect-[3/2] w-full bg-stone-200 p-4 sm:p-8 lg:p-12 flex items-center justify-center rounded-2xl'}">
-                                        <img src="${speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg'}" alt="${speaker.name}" class="w-full h-full object-cover shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 rounded-2xl">
+                                    <div class="w-full rounded-2xl overflow-hidden shadow-2xl bg-stone-100 flex items-center justify-center">
+                                        <img src="${speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg'}" alt="${speaker.name}" class="w-full h-auto max-h-[600px] object-cover rounded-2xl grayscale hover:grayscale-0 transition-all duration-700">
                                     </div>
                                 </div>
                             `;
@@ -66,6 +67,16 @@
                             el.innerHTML = isEven ? textContent + imageContent : imageContent + textContent;
                             container.appendChild(el);
                         });
+
+                        // Check hash and scroll to targeted speaker
+                        if (window.location.hash) {
+                            setTimeout(() => {
+                                const target = document.querySelector(window.location.hash);
+                                if (target) {
+                                    target.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }, 100);
+                        }
                     } else {
                         container.innerHTML = '<p class="col-span-full text-center text-stone-500 py-12">No voices found.</p>';
                     }

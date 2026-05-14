@@ -439,6 +439,7 @@ function openMeetingModal(meeting = null) {
         document.getElementById('meeting-title').value = meeting.title;
         document.getElementById('meeting-desc').value = meeting.description || '';
         document.getElementById('meeting-long-desc').value = meeting.longDescription || '';
+        document.getElementById('meeting-pullquote').value = meeting.pullQuote || '';
         document.getElementById('meeting-location').value = meeting.location || '';
         if (meeting.socials) {
             document.getElementById('meeting-yt').value = meeting.socials.yt || '';
@@ -498,6 +499,7 @@ async function handleMeetingSubmit(e) {
         title: document.getElementById('meeting-title').value,
         description: document.getElementById('meeting-desc').value,
         longDescription: document.getElementById('meeting-long-desc').value,
+        pullQuote: document.getElementById('meeting-pullquote').value,
         location: document.getElementById('meeting-location').value,
         socials: {
             yt: document.getElementById('meeting-yt').value,

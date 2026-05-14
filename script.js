@@ -191,13 +191,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const featured = data.speakers.filter(s => s.isFeatured);
         featured.forEach((speaker, idx) => {
             const el = document.createElement('a');
-            el.href = `speaker.html?id=${speaker.id}`;
+            el.href = `speakers.html#speaker-${speaker.id}`;
             el.className = `group cursor-pointer block reveal stagger-${idx + 1}`;
+            const photoUrl = speaker.photo ? resolvePhoto(speaker.photo) : 'img/placeholder.jpg';
+
             el.innerHTML = `
-                <div class="relative aspect-square bg-stone-200 mb-6 overflow-hidden rounded-2xl card-lift">
-                    <img alt="${speaker.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.2s] ease-out" src="${speaker.photo ? resolvePhoto(speaker.photo) : 'img/placeholder.jpg'}">
+                <div class="relative aspect-square bg-stone-200 mb-6 overflow-hidden rounded-2xl card-lift shadow-xl">
+                    <img alt="${speaker.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.2s] ease-out" src="${photoUrl}">
                     
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
                     <div class="absolute bottom-0 left-0 p-6 z-10 opacity-0 group-hover:opacity-100 translate-y-6 group-hover:translate-y-0 transition-all duration-700 ease-out flex flex-col justify-end w-full pointer-events-none">
                         <span class="font-label-bold text-[10px] uppercase text-stone-300 tracking-widest">${speaker.title}</span>
                         <h3 class="font-display text-xl lg:text-2xl font-bold uppercase mt-2 text-white">${speaker.name}</h3>
@@ -205,6 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             `;
             speakersContainer.appendChild(el);
+
             // Register for scroll reveal
             if (typeof revealObserver !== 'undefined') revealObserver.observe(el);
         });
@@ -269,8 +272,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ${overlay}
                 <div class="relative z-10">
                     <span class="font-label-bold text-[10px] uppercase ${tagColor} tracking-widest mb-2 block">${loc.tag}</span>
-                    <h3 class="font-display text-xl sm:text-2xl lg:text-3xl font-bold uppercase tracking-tighter mb-3 sm:mb-4 ${textColor}">${loc.name}</h3>
-                    ${index === 0 ? `<p class="font-body-md text-sm sm:text-base ${textColor} max-w-md mb-4 sm:mb-8 opacity-80">${loc.description}</p>` : ''}
+                    <h3 class="font-display ${index === 0 ? 'text-3xl sm:text-5xl lg:text-6xl font-extrabold' : 'text-xl sm:text-2xl lg:text-3xl font-bold'} uppercase tracking-tighter mb-3 sm:mb-4 ${textColor}">${loc.name}</h3>
                     <div class="flex items-center gap-4 mt-auto justify-end">
                         <button class="btn-primary ${loc.photo ? 'bg-white text-black' : 'bg-primary text-on-primary'} px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-label-bold text-[10px] uppercase tracking-widest flex items-center gap-2">
                             Explore <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
