@@ -383,6 +383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         subForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const statusEl = document.getElementById('subscribe-status');
+            const name = document.getElementById('sub-name').value;
             const email = document.getElementById('sub-email').value;
             const phone = document.getElementById('sub-phone').value;
             statusEl.classList.remove('hidden');
@@ -392,7 +393,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const res = await fetch(`${API_URL}/subscribe`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, phone })
+                    body: JSON.stringify({ name, email, phone })
                 });
                 if (res.ok) {
                     statusEl.textContent = '\u2713 Subscribed successfully!';

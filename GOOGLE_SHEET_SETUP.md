@@ -59,6 +59,7 @@ function doPost(e) {
     const receivedSignature = payload.signature;
     const emailForSig = payload.email ? String(payload.email).trim() : "";
     const phoneForSig = payload.phone ? String(payload.phone).trim() : "";
+    const nameForSig = payload.name ? String(payload.name).trim() : "";
     
     // Validate request freshness to prevent replay attacks (max 5 minutes age)
     const now = Date.now();
@@ -69,7 +70,7 @@ function doPost(e) {
     }
     
     // Reconstruct signature payload matching Node.js backend
-    const signaturePayload = timestamp + '.' + emailForSig + '.' + phoneForSig;
+    const signaturePayload = timestamp + '.' + emailForSig + '.' + phoneForSig + '.' + nameForSig;
     
     const signatureBytes = Utilities.computeHmacSignature(
       Utilities.MacAlgorithm.HMAC_SHA_256, 
@@ -95,6 +96,7 @@ function doPost(e) {
     }
     
     // 3. Extract and Sanitize Data
+    let name = nameForSig;
     let email = emailForSig;
     let phone = phoneForSig;
     
@@ -112,6 +114,7 @@ function doPost(e) {
     }
     
     // 5. Formula Injection (CSV Injection) Mitigation
+    name = sanitizeAgainstFormulaInjection(name);
     email = sanitizeAgainstFormulaInjection(email);
     phone = sanitizeAgainstFormulaInjection(phone);
     
@@ -123,8 +126,8 @@ function doPost(e) {
     // Auto-initialize Sheet and Headers if missing
     if (!sheet) {
       sheet = ss.insertSheet(sheetName);
-      sheet.appendRow(["Timestamp", "Email Address", "Phone Number", "GDPR Status"]);
-      sheet.getRange(1, 1, 1, 4).setFontWeight("bold");
+      sheet.appendRow(["Timestamp", "Name", "Email Address", "Phone Number", "GDPR Status"]);
+      sheet.getRange(1, 1, 1, 5).setFontWeight("bold");
       sheet.setFrozenRows(1);
     }
     
@@ -133,7 +136,7 @@ function doPost(e) {
     const values = dataRange.getValues();
     let isDuplicate = false;
     for (let i = 1; i < values.length; i++) {
-      if (values[i][1] === email) { // Column index 1 is Email Address
+      if (values[i][2] === email) { // Column index 2 is Email Address
         isDuplicate = true;
         break;
       }
@@ -146,7 +149,7 @@ function doPost(e) {
     
     // 7. Write Securely to Spreadsheet
     const currentTimestamp = new Date();
-    sheet.appendRow([currentTimestamp, email, phone, "Explicit Consent via Web Form"]);
+    sheet.appendRow([currentTimestamp, name, email, phone, "Explicit Consent via Web Form"]);
     
     // 8. Mask PII in Execution Logs to comply with Privacy regulations
     const maskedEmail = maskPII(payload.email);

@@ -551,7 +551,8 @@ function secureRequestFollowRedirect(urlStr, postData, method = 'POST') {
 }
 
 app.post('/api/subscribe', async (req, res) => {
-    const { email, phone } = req.body;
+    const { name, email, phone } = req.body;
+    if (!name) return res.status(400).json({ error: 'Name is required.' });
     if (!email) return res.status(400).json({ error: 'Email is required.' });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Invalid email.' });
     if (phone && !/^[+\d\s\-\(\)\.]{7,20}$/.test(phone)) return res.status(400).json({ error: 'Invalid phone.' });
@@ -560,8 +561,8 @@ app.post('/api/subscribe', async (req, res) => {
     try {
         const decryptedKey = decrypt(data.googleSheetApiKey || 'GATHERING_SECURE_TOKEN_3a7b9e');
         const timestamp = Date.now().toString();
-        const sig = crypto.createHmac('sha256', decryptedKey).update(timestamp + '.' + email + '.' + (phone || '')).digest('hex');
-        const postData = JSON.stringify({ email, phone: phone || '', timestamp, signature: sig });
+        const sig = crypto.createHmac('sha256', decryptedKey).update(timestamp + '.' + email + '.' + (phone || '') + '.' + (name || '')).digest('hex');
+        const postData = JSON.stringify({ name: name || '', email, phone: phone || '', timestamp, signature: sig });
         const result = await secureRequestFollowRedirect(data.googleSheetWebhook, postData);
         if (result.status === 'error') return res.status(400).json({ error: result.message });
         res.json({ success: true, duplicate: result.duplicate || false });
