@@ -561,8 +561,13 @@ app.post('/api/subscribe', async (req, res) => {
     try {
         const decryptedKey = decrypt(data.googleSheetApiKey || 'GATHERING_SECURE_TOKEN_3a7b9e');
         const timestamp = Date.now().toString();
-        const sig = crypto.createHmac('sha256', decryptedKey).update(timestamp + '.' + email + '.' + (phone || '') + '.' + (name || '')).digest('hex');
-        const postData = JSON.stringify({ name: name || '', email, phone: phone || '', timestamp, signature: sig });
+        const cleanName = name ? name.trim() : '';
+        const cleanEmail = email ? email.trim() : '';
+        const cleanPhone = phone ? phone.trim() : '';
+        
+        // IMPORTANT: Signature payload must NOT include name to remain backwards compatible with existing Apps Script authentication.
+        const sig = crypto.createHmac('sha256', decryptedKey).update(timestamp + '.' + cleanEmail + '.' + cleanPhone).digest('hex');
+        const postData = JSON.stringify({ name: cleanName, email: cleanEmail, phone: cleanPhone, timestamp, signature: sig });
         const result = await secureRequestFollowRedirect(data.googleSheetWebhook, postData);
         if (result.status === 'error') return res.status(400).json({ error: result.message });
         res.json({ success: true, duplicate: result.duplicate || false });

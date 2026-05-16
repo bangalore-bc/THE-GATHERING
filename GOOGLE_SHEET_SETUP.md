@@ -70,7 +70,9 @@ function doPost(e) {
     }
     
     // Reconstruct signature payload matching Node.js backend
-    const signaturePayload = timestamp + '.' + emailForSig + '.' + phoneForSig + '.' + nameForSig;
+    // IMPORTANT: signaturePayload does NOT include nameForSig to maintain backwards compatibility 
+    // with existing authentication.
+    const signaturePayload = timestamp + '.' + emailForSig + '.' + phoneForSig;
     
     const signatureBytes = Utilities.computeHmacSignature(
       Utilities.MacAlgorithm.HMAC_SHA_256, 
