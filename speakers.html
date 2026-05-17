@@ -33,7 +33,7 @@
                             const isEven = index % 2 === 0;
                             const el = document.createElement('div');
                             el.id = `speaker-${speaker.id}`;
-                            el.className = "flex flex-col md:flex-row items-center gap-8 sm:gap-12 lg:gap-24 w-full scroll-mt-24";
+                            el.className = "scroll-section snap-start w-full h-screen flex items-center justify-center px-4 sm:px-6 lg:px-12";
                             
                             const numberStr = (index + 1).toString().padStart(2, '0');
                             const buttonText = isEven ? 'Latest Message' : 'Portfolio Review';
@@ -59,16 +59,29 @@
                             `;
 
                             const imageContent = `
-                                <div class="flex-1 w-full ${isEven ? 'order-1 md:order-2' : 'order-1 md:order-1'}">
-                                    <div class="w-full rounded-2xl overflow-hidden shadow-2xl bg-stone-100 flex items-center justify-center">
-                                        <img src="${speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg'}" alt="${speaker.name}" class="w-full h-auto max-h-[600px] object-cover rounded-2xl hover:grayscale transition-all duration-700">
+                                    <div class="flex-1 w-full ${isEven ? 'order-1 md:order-2' : 'order-1 md:order-1'}">
+                                        <div class="w-full rounded-2xl overflow-hidden shadow-2xl bg-stone-100 flex items-center justify-center">
+                                            <img src="${speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg'}" alt="${speaker.name}" class="speaker-img w-full h-auto max-h-[600px] object-cover rounded-2xl transition-all duration-700">
+                                        </div>
                                     </div>
-                                </div>
-                            `;
+                                `;
 
-                            el.innerHTML = isEven ? textContent + imageContent : imageContent + textContent;
-                            container.appendChild(el);
-                            });
+                                el.innerHTML = `<div class="max-w-[1440px] w-full mx-auto flex flex-col md:flex-row items-center gap-8 sm:gap-12 lg:gap-24">${isEven ? textContent + imageContent : imageContent + textContent}</div>`;
+                                container.appendChild(el);
+                                });
+
+                                // Add Intersection Observer for focus effect
+                                const observer = new IntersectionObserver((entries) => {
+                                    entries.forEach(entry => {
+                                        if (entry.isIntersecting) {
+                                            entry.target.classList.add('in-focus');
+                                        } else {
+                                            entry.target.classList.remove('in-focus');
+                                        }
+                                    });
+                                }, { threshold: 0.5 });
+
+                                document.querySelectorAll('#all-speakers > div').forEach(el => observer.observe(el));
                         } else {
                             container.innerHTML = '<p class="col-span-full text-center text-stone-500 py-12">No voices found.</p>';
                         }
@@ -92,10 +105,23 @@
             }
         });
     </script>
+    <style>
+        .speaker-img {
+            filter: grayscale(100%);
+            transition: filter 0.7s ease-in-out;
+        }
+        .in-focus .speaker-img {
+            filter: grayscale(0%);
+            transition-delay: 0.3s;
+        }
+        /* Hide scrollbar but keep functionality */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
 <body class="bg-[#f9f9f9] text-stone-900 font-body-md">
     <!-- Simple Navbar -->
-    <header class="bg-white border-b-2 border-stone-200 py-3 sm:py-4 px-4 sm:px-6 md:px-12">
+    <header class="bg-white border-b-2 border-stone-200 py-3 sm:py-4 px-4 sm:px-6 md:px-12 fixed top-0 left-0 right-0 z-50">
         <div class="max-w-[1440px] mx-auto flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-2 sm:gap-4 hover:opacity-80 transition">
                 <span class="material-symbols-outlined text-xl sm:text-2xl">arrow_back</span>
@@ -107,10 +133,16 @@
         </div>
     </header>
 
-    <main class="max-w-[1440px] mx-auto py-12 sm:py-24 px-4 sm:px-6 md:px-12 min-h-screen">
-        <h1 class="font-display text-3xl sm:text-5xl md:text-7xl font-bold uppercase tracking-tighter mb-10 sm:mb-16 border-l-[3px] sm:border-l-4 border-black pl-5 sm:pl-8">The Collective Voices</h1>
+    <main class="snap-y snap-mandatory h-screen overflow-y-auto no-scrollbar" id="main-scroll">
+        <!-- Title Section -->
+        <section class="scroll-section snap-start w-full h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-12 pt-20">
+            <div class="max-w-[1440px] w-full mx-auto">
+                <h1 class="font-display text-3xl sm:text-5xl md:text-7xl font-bold uppercase tracking-tighter border-l-[3px] sm:border-l-4 border-black pl-5 sm:pl-8">The Collective Voices</h1>
+                <p class="font-body-md text-stone-500 mt-4 text-sm uppercase tracking-widest">Scroll to explore</p>
+            </div>
+        </section>
         
-        <div id="all-speakers" class="flex flex-col gap-16 sm:gap-24 lg:gap-32 py-6 sm:py-12">
+        <div id="all-speakers" class="w-full">
             <!-- Dynamic Content -->
         </div>
     </main>
