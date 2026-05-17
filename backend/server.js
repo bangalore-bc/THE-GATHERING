@@ -608,6 +608,11 @@ app.delete('/api/events/:id', async (req, res) => {
     res.json({ success: true, upcomingEvents: data.upcomingEvents });
 });
 
+app.use((err, req, res, next) => {
+    console.error('Global error handler:', err);
+    res.status(500).json({ error: err.message || 'Internal Server Error' });
+});
+
 // --- Start Server ---
 app.listen(PORT, () => { 
     console.log(`Server running on http://localhost:${PORT}`); 
