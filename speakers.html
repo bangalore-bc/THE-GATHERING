@@ -21,7 +21,7 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                const res = await fetch('/api/data');
+                const res = await fetch('https://gathering.blessingtoday.org/api/data');
                 if (res.ok) {
                     const data = await res.json();
                     const container = document.getElementById('all-speakers');
@@ -61,7 +61,7 @@
                             const imageContent = `
                                     <div class="flex-1 w-full ${isEven ? 'order-1 md:order-2' : 'order-1 md:order-1'}">
                                         <div class="w-full rounded-2xl overflow-hidden shadow-2xl bg-stone-100 flex items-center justify-center">
-                                            <img src="${speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg'}" alt="${speaker.name}" class="speaker-img w-full h-auto max-h-[600px] object-cover rounded-2xl transition-all duration-700">
+                                            <img src="${speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : 'https://gathering.blessingtoday.org/' + speaker.photo) : 'img/placeholder.jpg'}" alt="${speaker.name}" class="speaker-img w-full h-auto max-h-[600px] object-cover rounded-2xl transition-all duration-700">
                                         </div>
                                     </div>
                                 `;

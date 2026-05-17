@@ -29,14 +29,14 @@
             }
 
             try {
-                const res = await fetch('/api/data');
+                const res = await fetch('https://gathering.blessingtoday.org/api/data');
                 if (res.ok) {
                     const data = await res.json();
                     const loc = data.locations.find(l => l.id === id);
 
                     if (loc) {
                         document.title = `${loc.name} - The Gathering`;
-                        const photoUrl = loc.photo ? (loc.photo.startsWith('http') ? loc.photo : loc.photo) : 'img/placeholder.jpg';
+                        const photoUrl = loc.photo ? (loc.photo.startsWith('http') ? loc.photo : 'https://gathering.blessingtoday.org/' + loc.photo) : 'img/placeholder.jpg';
                         document.getElementById('l-bg').src = photoUrl;
                         document.getElementById('l-tag').innerText = loc.tag;
                         document.getElementById('l-name').innerText = loc.name;

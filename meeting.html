@@ -182,8 +182,8 @@
     </footer>
 
     <script>
-        const API_URL = '/api';
-        function resolvePhoto(url) { if (!url) return ''; if (url.startsWith('http')) return url; return url; }
+        const API_URL = 'https://gathering.blessingtoday.org/api';
+        function resolvePhoto(url) { if (!url) return ''; if (url.startsWith('http')) return url; return `https://gathering.blessingtoday.org/${url}`; }
         document.addEventListener('DOMContentLoaded', async () => {
             const id = new URLSearchParams(window.location.search).get('id');
             if (!id) { document.getElementById('meeting-title').innerText = "Not Found"; return; }

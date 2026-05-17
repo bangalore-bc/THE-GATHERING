@@ -1,6 +1,6 @@
 // Latest update with dual toggles (Voices and Main)
-const API_URL = '/api';
-function resolvePhoto(url) { if (!url) return ''; if (url.startsWith('http')) return url; return url; }
+const API_URL = 'https://gathering.blessingtoday.org/api';
+function resolvePhoto(url) { if (!url) return ''; if (url.startsWith('http')) return url; return `https://gathering.blessingtoday.org/${url}`; }
 
 let currentSpeakers = [];
 let currentLocations = [];

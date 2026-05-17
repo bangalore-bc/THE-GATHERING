@@ -29,14 +29,14 @@
             }
 
             try {
-                const res = await fetch('/api/data');
+                const res = await fetch('https://gathering.blessingtoday.org/api/data');
                 if (res.ok) {
                     const data = await res.json();
                     const speaker = data.speakers.find(s => s.id === id);
 
                     if (speaker) {
                         document.title = `${speaker.name} - The Gathering`;
-                        document.getElementById('s-photo').src = speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg';
+                        document.getElementById('s-photo').src = speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : 'https://gathering.blessingtoday.org/' + speaker.photo) : 'img/placeholder.jpg';
                         document.getElementById('s-title').innerText = speaker.title;
                         document.getElementById('s-name').innerText = speaker.name;
                         document.getElementById('s-about').innerText = speaker.about;

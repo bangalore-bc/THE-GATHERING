@@ -85,13 +85,13 @@ window.tailwind = {
     }
 };
 
-const API_URL = '/api';
+const API_URL = 'https://gathering.blessingtoday.org/api';
 
 // Resolves image URLs: full https URLs pass through, relative /uploads/ paths get prefixed
 function resolvePhoto(photoUrl) {
     if (!photoUrl) return '';
     if (photoUrl.startsWith('http')) return photoUrl;
-    return photoUrl; // relative paths served by the same origin
+    return `https://gathering.blessingtoday.org/${photoUrl}`; // prefix relative paths
 }
 
 
