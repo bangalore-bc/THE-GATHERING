@@ -117,6 +117,45 @@
         /* Hide scrollbar but keep functionality */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Abstract Blobs */
+        .blob {
+            transition: transform 0.2s ease-out;
+        }
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            top: 20%;
+            left: 10%;
+            animation: float-1 20s infinite alternate ease-in-out;
+        }
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            bottom: 10%;
+            right: 10%;
+            animation: float-2 25s infinite alternate ease-in-out;
+        }
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            top: 50%;
+            left: 50%;
+            animation: float-3 15s infinite alternate ease-in-out;
+        }
+        
+        @keyframes float-1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 100px) scale(1.1); }
+        }
+        @keyframes float-2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-100px, -50px) scale(0.9); }
+        }
+        @keyframes float-3 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-50px, 50px) scale(1.2); }
+        }
     </style>
 </head>
 <body class="bg-[#f9f9f9] text-stone-900 font-body-md">
@@ -135,8 +174,21 @@
 
     <main class="snap-y snap-mandatory h-screen overflow-y-auto no-scrollbar" id="main-scroll">
         <!-- Title Section -->
-        <section class="scroll-section snap-start w-full h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-12 pt-20">
-            <div class="max-w-[1440px] w-full mx-auto">
+        <section class="scroll-section snap-start w-full h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-12 pt-20 relative overflow-hidden">
+            <!-- Abstract Background -->
+            <div class="absolute inset-0 -z-10">
+                <div class="blob-container absolute top-0 left-0 w-full h-full">
+                    <div class="blob blob-1 absolute bg-stone-200/50 rounded-full blur-3xl filter opacity-70"></div>
+                </div>
+                <div class="blob-container absolute top-0 left-0 w-full h-full">
+                    <div class="blob blob-2 absolute bg-stone-300/50 rounded-full blur-3xl filter opacity-50"></div>
+                </div>
+                <div class="blob-container absolute top-0 left-0 w-full h-full">
+                    <div class="blob blob-3 absolute bg-stone-100/70 rounded-full blur-3xl filter opacity-80"></div>
+                </div>
+            </div>
+            
+            <div class="max-w-[1440px] w-full mx-auto relative z-10">
                 <h1 class="font-display text-3xl sm:text-5xl md:text-7xl font-bold uppercase tracking-tighter border-l-[3px] sm:border-l-4 border-black pl-5 sm:pl-8">The Collective Voices</h1>
                 <p class="font-body-md text-stone-500 mt-4 text-sm uppercase tracking-widest">Scroll to explore</p>
             </div>
@@ -146,5 +198,19 @@
             <!-- Dynamic Content -->
         </div>
     </main>
+    <script>
+        // Parallax Effect for Blobs
+        const mainScroll = document.getElementById('main-scroll');
+        const containers = document.querySelectorAll('.blob-container');
+        if (mainScroll) {
+            mainScroll.addEventListener('scroll', () => {
+                const scrolled = mainScroll.scrollTop;
+                containers.forEach((el, index) => {
+                    const speed = (index + 1) * 0.15;
+                    el.style.transform = `translateY(${scrolled * speed}px)`;
+                });
+            });
+        }
+    </script>
 </body>
 </html>
