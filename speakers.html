@@ -27,7 +27,9 @@
                     const container = document.getElementById('all-speakers');
                     
                     if (data.speakers && data.speakers.length > 0) {
-                        data.speakers.forEach((speaker, index) => {
+                        const voicesSpeakers = data.speakers.filter(s => s.isVoicesFeatured);
+                        if (voicesSpeakers.length > 0) {
+                            voicesSpeakers.forEach((speaker, index) => {
                             const isEven = index % 2 === 0;
                             const el = document.createElement('div');
                             el.id = `speaker-${speaker.id}`;
@@ -59,14 +61,17 @@
                             const imageContent = `
                                 <div class="flex-1 w-full ${isEven ? 'order-1 md:order-2' : 'order-1 md:order-1'}">
                                     <div class="w-full rounded-2xl overflow-hidden shadow-2xl bg-stone-100 flex items-center justify-center">
-                                        <img src="${speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg'}" alt="${speaker.name}" class="w-full h-auto max-h-[600px] object-cover rounded-2xl grayscale hover:grayscale-0 transition-all duration-700">
+                                        <img src="${speaker.photo ? (speaker.photo.startsWith('http') ? speaker.photo : speaker.photo) : 'img/placeholder.jpg'}" alt="${speaker.name}" class="w-full h-auto max-h-[600px] object-cover rounded-2xl hover:grayscale transition-all duration-700">
                                     </div>
                                 </div>
                             `;
 
                             el.innerHTML = isEven ? textContent + imageContent : imageContent + textContent;
                             container.appendChild(el);
-                        });
+                            });
+                        } else {
+                            container.innerHTML = '<p class="col-span-full text-center text-stone-500 py-12">No voices found.</p>';
+                        }
 
                         // Check hash and scroll to targeted speaker
                         if (window.location.hash) {

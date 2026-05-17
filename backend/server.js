@@ -308,13 +308,18 @@ app.post('/api/hero', upload.single('heroPhoto'), async (req, res) => {
 
 // --- Speakers ---
 app.post('/api/speakers', upload.single('photoFile'), async (req, res) => {
-    const data = await readData();
-    const newSpeaker = JSON.parse(req.body.data);
-    newSpeaker.id = Date.now();
-    if (req.file) newSpeaker.photo = await uploadFile(req.file.buffer, req.file.originalname);
-    data.speakers.push(newSpeaker);
-    await writeData(data);
-    res.json({ success: true, speakers: data.speakers });
+    try {
+        const data = await readData();
+        const newSpeaker = JSON.parse(req.body.data);
+        newSpeaker.id = Date.now();
+        if (req.file) newSpeaker.photo = await uploadFile(req.file.buffer, req.file.originalname);
+        data.speakers.push(newSpeaker);
+        await writeData(data);
+        res.json({ success: true, speakers: data.speakers });
+    } catch (err) {
+        console.error('Failed to add speaker:', err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.put('/api/speakers-order', async (req, res) => {

@@ -1,3 +1,4 @@
+// Latest update with dual toggles (Voices and Main)
 const API_URL = '/api';
 function resolvePhoto(url) { if (!url) return ''; if (url.startsWith('http')) return url; return url; }
 
@@ -147,8 +148,13 @@ function renderSpeakers() {
                 </div>
             </div>
             <div class="flex gap-4 items-center">
-                <label class="flex items-center justify-center cursor-pointer text-sm font-medium text-stone-600 mr-4" title="Show on Main Page">
-                    <input type="checkbox" ${speaker.isFeatured ? 'checked' : ''} onchange="toggleSpeakerFeatured(${speaker.id}, this.checked)" class="w-5 h-5 rounded border-stone-300 text-blue-600 focus:ring-blue-500">
+                <label class="flex flex-col items-center justify-center cursor-pointer text-[10px] font-medium text-stone-600 mr-2" title="Show on Main Page">
+                    Main
+                    <input type="checkbox" ${speaker.isFeatured ? 'checked' : ''} onchange="toggleSpeakerFeatured(${speaker.id}, this.checked)" class="mt-1 w-4 h-4 rounded border-stone-300 text-blue-600 focus:ring-blue-500">
+                </label>
+                <label class="flex flex-col items-center justify-center cursor-pointer text-[10px] font-medium text-stone-600 mr-4" title="Show on Voices Page">
+                    Voices
+                    <input type="checkbox" ${speaker.isVoicesFeatured ? 'checked' : ''} onchange="toggleSpeakerVoicesFeatured(${speaker.id}, this.checked)" class="mt-1 w-4 h-4 rounded border-stone-300 text-blue-600 focus:ring-blue-500">
                 </label>
                 <button onclick="editSpeaker(${speaker.id})" class="text-sm bg-stone-100 px-3 py-1 rounded hover:bg-stone-200">Edit</button>
                 <button onclick="deleteSpeaker(${speaker.id})" class="text-sm bg-red-100 text-red-600 px-3 py-1 rounded hover:bg-red-200">Delete</button>
@@ -246,6 +252,25 @@ window.toggleSpeakerFeatured = async function (id, isFeatured) {
     }
 }
 
+window.toggleSpeakerVoicesFeatured = async function (id, isFeatured) {
+    const speaker = currentSpeakers.find(s => s.id === id);
+    if (!speaker) return;
+
+    speaker.isVoicesFeatured = isFeatured;
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(speaker));
+
+    try {
+        const res = await fetch(`${API_URL}/speakers/${id}`, { method: 'PUT', body: formData });
+        if (!res.ok) throw new Error();
+    } catch (err) {
+        alert('Failed to update voices featured status');
+        speaker.isVoicesFeatured = !isFeatured;
+        renderSpeakers();
+    }
+}
+
 async function saveSpeakersOrder() {
     const order = currentSpeakers.map(s => s.id);
     try {
@@ -292,8 +317,13 @@ async function handleSpeakerSubmit(e) {
             currentSpeakers = data.speakers;
             renderSpeakers();
             closeModal('speaker-modal');
+        } else {
+            const errData = await res.json().catch(() => ({}));
+            alert(`Failed to save speaker: ${errData.error || res.statusText || 'Unknown error'}`);
         }
-    } catch (err) { alert('Failed to save speaker'); }
+    } catch (err) { 
+        alert(`Failed to save speaker: ${err.message}`); 
+    }
 }
 
 // Locations
