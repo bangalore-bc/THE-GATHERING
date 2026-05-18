@@ -151,7 +151,7 @@
                 <div>
                     <div class="text-lg sm:text-xl font-bold text-stone-900 mb-2">THE GATHERING</div>
                     <p class="font-epilogue text-[9px] sm:text-[10px] uppercase tracking-widest text-stone-400 leading-relaxed">
-                        © 2024 THE GATHERING. A COMMUNITY GATHERED IN GRACE.
+                        2024, THE GATHERING, a community of gathered in grace
                     </p>
                 </div>
             </div>
@@ -354,29 +354,23 @@
                 }
 
                 // Dynamic Footer Links
-                if (allData.instagramUrl) {
-                    const el = document.getElementById('footer-instagram-link');
-                    if (el) el.href = allData.instagramUrl;
-                }
-                if (allData.facebookUrl) {
-                    const el = document.getElementById('footer-facebook-link');
-                    if (el) el.href = allData.facebookUrl;
-                }
-                if (allData.youtubeUrl) {
-                    const el = document.getElementById('footer-youtube-link');
-                    if (el) el.href = allData.youtubeUrl;
-                }
-                if (allData.givingUrl) {
-                    const el = document.getElementById('footer-giving-link');
-                    if (el) el.href = allData.givingUrl;
-                }
-                if (allData.contactUrl) {
-                    const el = document.getElementById('footer-contact-link');
-                    if (el) el.href = allData.contactUrl;
-                }
-                if (allData.volunteerUrl) {
-                    const el = document.getElementById('footer-volunteer-link');
-                    if (el) el.href = allData.volunteerUrl;
+                const footerLinks = {
+                    'footer-instagram-link': allData.instagramUrl,
+                    'footer-facebook-link': allData.facebookUrl,
+                    'footer-youtube-link': allData.youtubeUrl,
+                    'footer-giving-link': allData.givingUrl,
+                    'footer-contact-link': allData.contactUrl,
+                    'footer-volunteer-link': allData.volunteerUrl
+                };
+                for (const [id, url] of Object.entries(footerLinks)) {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        if (url) {
+                            el.href = url;
+                        } else {
+                            el.classList.add('hidden');
+                        }
+                    }
                 }
 
             } catch (err) {

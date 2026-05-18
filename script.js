@@ -354,29 +354,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Dynamic Footer Links
-    if (data.instagramUrl) {
-        const el = document.getElementById('footer-instagram-link');
-        if (el) el.href = data.instagramUrl;
-    }
-    if (data.facebookUrl) {
-        const el = document.getElementById('footer-facebook-link');
-        if (el) el.href = data.facebookUrl;
-    }
-    if (data.youtubeUrl) {
-        const el = document.getElementById('footer-youtube-link');
-        if (el) el.href = data.youtubeUrl;
-    }
-    if (data.givingUrl) {
-        const el = document.getElementById('footer-giving-link');
-        if (el) el.href = data.givingUrl;
-    }
-    if (data.contactUrl) {
-        const el = document.getElementById('footer-contact-link');
-        if (el) el.href = data.contactUrl;
-    }
-    if (data.volunteerUrl) {
-        const el = document.getElementById('footer-volunteer-link');
-        if (el) el.href = data.volunteerUrl;
+    const footerLinks = {
+        'footer-instagram-link': data.instagramUrl,
+        'footer-facebook-link': data.facebookUrl,
+        'footer-youtube-link': data.youtubeUrl,
+        'footer-giving-link': data.givingUrl,
+        'footer-contact-link': data.contactUrl,
+        'footer-volunteer-link': data.volunteerUrl
+    };
+    for (const [id, url] of Object.entries(footerLinks)) {
+        const el = document.getElementById(id);
+        if (el) {
+            if (url) {
+                el.href = url;
+            } else {
+                el.classList.add('hidden');
+            }
+        }
     }
 
     // Subscribe form
