@@ -373,6 +373,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Hide footer sections if empty
+    const sectionsToTrack = ['footer-instagram-link', 'footer-giving-link'];
+    sectionsToTrack.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            const parent = el.parentElement;
+            if (parent) {
+                const visibleLinks = parent.querySelectorAll('a:not(.hidden)');
+                if (visibleLinks.length === 0) {
+                    parent.classList.add('hidden');
+                }
+            }
+        }
+    });
+
     // Subscribe form
     const subForm = document.getElementById('subscribe-form');
     if (subForm) {

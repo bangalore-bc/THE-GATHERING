@@ -92,6 +92,19 @@
                 updateBlobs();
             }
 
+            function checkMobileSnap() {
+                const mainScroll = document.getElementById('main-scroll');
+                if (mainScroll) {
+                    if (window.innerWidth < 768) {
+                        mainScroll.classList.remove('snap-y', 'snap-mandatory');
+                    } else {
+                        mainScroll.classList.add('snap-y', 'snap-mandatory');
+                    }
+                }
+            }
+            window.addEventListener('resize', checkMobileSnap);
+            checkMobileSnap();
+
             try {
                 const res = await fetch('https://gathering.blessingtoday.org/api/data');
                 if (res.ok) {
