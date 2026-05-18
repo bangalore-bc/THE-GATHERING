@@ -270,12 +270,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             el.innerHTML = `
                 ${bgImg}
                 ${overlay}
-                <div class="relative z-10">
-                    <span class="font-label-bold text-[10px] uppercase ${tagColor} tracking-widest mb-2 block">${loc.tag}</span>
-                    <h3 class="font-display ${index === 0 ? 'text-3xl sm:text-5xl lg:text-6xl font-extrabold' : 'text-xl sm:text-2xl lg:text-3xl font-bold'} uppercase tracking-tighter mb-3 sm:mb-4 ${textColor}">${loc.name}</h3>
-                    <div class="flex items-center gap-4 mt-auto justify-end">
-                        <button class="btn-primary ${loc.photo ? 'bg-white text-black' : 'bg-primary text-on-primary'} px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-label-bold text-[10px] uppercase tracking-widest flex items-center gap-2">
-                            Explore <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
+                <div class="relative z-10 flex flex-row justify-between items-end w-full gap-4 mt-auto">
+                    <div class="flex flex-col text-left flex-1">
+                        <span class="font-label-bold text-[9px] sm:text-[10px] uppercase ${tagColor} tracking-widest mb-1 sm:mb-2 block">${loc.tag}</span>
+                        <h3 class="font-display ${index === 0 ? 'text-2xl sm:text-4xl lg:text-5xl font-extrabold' : 'text-lg sm:text-xl lg:text-2xl font-bold'} uppercase tracking-tighter ${textColor} leading-[1.1] m-0">${loc.name}</h3>
+                    </div>
+                    <div class="shrink-0 mb-1">
+                        <button class="btn-primary ${loc.photo ? 'bg-white text-black' : 'bg-primary text-on-primary'} px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-label-bold text-[10px] uppercase tracking-widest flex items-center gap-2">
+                            Explore <span class="material-symbols-outlined text-[12px] sm:text-sm group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
                         </button>
                     </div>
                 </div>
