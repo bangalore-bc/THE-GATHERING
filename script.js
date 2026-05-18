@@ -248,10 +248,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const el = document.createElement('div');
 
             if (isMobile) {
-                el.className = `relative group overflow-hidden p-5 flex flex-col justify-end border border-stone-200/80 cursor-pointer rounded-2xl card-lift`;
+                el.className = `relative group overflow-hidden p-5 flex flex-col justify-end border border-stone-200/80 cursor-pointer rounded-2xl card-lift @container`;
                 el.style.minHeight = '220px';
             } else {
-                el.className = `absolute group overflow-hidden p-8 flex flex-col justify-end border border-stone-200/80 cursor-pointer rounded-2xl card-lift`;
+                el.className = `absolute group overflow-hidden p-8 flex flex-col justify-end border border-stone-200/80 cursor-pointer rounded-2xl card-lift @container`;
                 // Use percentages to perfectly scale within the wrapper
                 el.style.left = ((loc.x || 0) / (maxLayoutWidth || 1) * 100) + '%';
                 el.style.top = ((loc.y || 0) / (maxLayoutHeight || 1) * 100) + '%';
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="relative z-10 flex flex-row justify-between items-end w-full gap-4 mt-auto">
                     <div class="flex flex-col text-left flex-1">
                         <span class="font-label-bold text-[9px] sm:text-[10px] uppercase ${tagColor} tracking-widest mb-1 sm:mb-2 block">${loc.tag}</span>
-                        <h3 class="font-display ${index === 0 ? 'text-2xl sm:text-4xl lg:text-5xl font-extrabold' : 'text-lg sm:text-xl lg:text-2xl font-bold'} uppercase tracking-tighter ${textColor} leading-[1.1] m-0">${loc.name}</h3>
+                        <h3 class="font-display ${index === 0 ? 'font-extrabold' : 'font-bold'} uppercase tracking-tighter ${textColor} leading-[1.1] m-0 text-[clamp(1.25rem,8cqw,4.5rem)]">${loc.name}</h3>
                     </div>
                     <div class="shrink-0 mb-1">
                         <button class="btn-primary ${loc.photo ? 'bg-white text-black' : 'bg-primary text-on-primary'} px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-label-bold text-[10px] uppercase tracking-widest flex items-center gap-2">
