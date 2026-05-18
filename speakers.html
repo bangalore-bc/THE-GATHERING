@@ -20,6 +20,78 @@
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
+            function initBlobs(speakerCount) {
+                const lavaContainer = document.getElementById('lava-container');
+                if (!lavaContainer) return;
+                lavaContainer.innerHTML = '';
+                
+                const totalScreens = 1 + speakerCount;
+                const numBlobs = totalScreens * 5;
+                const blobs = [];
+                const blobColors = ['#a8a29e', '#78716c', '#d6d3d1'];
+                const blobSizes = [150, 200, 250, 300, 350, 400, 500];
+
+                for (let i = 0; i < numBlobs; i++) {
+                    const size = blobSizes[Math.floor(Math.random() * blobSizes.length)];
+                    const color = blobColors[Math.floor(Math.random() * blobColors.length)];
+                    
+                    const bContainer = document.createElement('div');
+                    bContainer.className = 'blob-container absolute';
+                    bContainer.style.width = `${size}px`;
+                    bContainer.style.height = `${size}px`;
+                    bContainer.style.left = '0px';
+                    bContainer.style.top = '0px';
+                    bContainer.style.marginLeft = `-${size/2}px`;
+                    bContainer.style.marginTop = `-${size/2}px`;
+                    
+                    const b = document.createElement('div');
+                    b.className = 'blob';
+                    b.style.width = '100%';
+                    b.style.height = '100%';
+                    b.style.background = color;
+                    b.style.borderRadius = '50%';
+                    b.style.opacity = '1';
+                    
+                    bContainer.appendChild(b);
+                    lavaContainer.appendChild(bContainer);
+                    
+                    let x = Math.random() * 100;
+                    let y = Math.random() * (totalScreens * 100);
+                    
+                    let vx = (Math.random() - 0.5) * 0.1;
+                    let vy = (Math.random() - 0.5) * 0.1;
+                    
+                    let parallaxSpeed = 0.5 + Math.random() * 0.4;
+                    
+                    blobs.push({ el: bContainer, x, y, vx, vy, parallaxSpeed });
+                }
+                
+                const mainScroll = document.getElementById('main-scroll');
+                
+                function updateBlobs() {
+                    const scrolled = mainScroll ? mainScroll.scrollTop : 0;
+                    const vw = window.innerWidth;
+                    const vh = window.innerHeight;
+                    
+                    blobs.forEach(b => {
+                        b.x += b.vx;
+                        b.y += b.vy;
+                        
+                        if (b.x < -20 || b.x > 120) b.vx *= -1;
+                        if (b.y < -20 || b.y > (totalScreens * 100 + 20)) b.vy *= -1;
+                        
+                        const xPx = (b.x / 100) * vw;
+                        const yPx = (b.y / 100) * vh;
+                        const scrollOffset = scrolled * b.parallaxSpeed;
+                        
+                        b.el.style.transform = `translate3d(${xPx}px, ${yPx - scrollOffset}px, 0)`;
+                    });
+                    
+                    requestAnimationFrame(updateBlobs);
+                }
+                updateBlobs();
+            }
+
             try {
                 const res = await fetch('https://gathering.blessingtoday.org/api/data');
                 if (res.ok) {
@@ -82,8 +154,10 @@
                                 }, { threshold: 0.5 });
 
                                 document.querySelectorAll('#all-speakers > div').forEach(el => observer.observe(el));
+                                initBlobs(voicesSpeakers.length);
                         } else {
                             container.innerHTML = '<p class="col-span-full text-center text-stone-500 py-12">No voices found.</p>';
+                            initBlobs(0);
                         }
 
                         // Check hash and scroll to targeted speaker
@@ -97,11 +171,15 @@
                         }
                     } else {
                         container.innerHTML = '<p class="col-span-full text-center text-stone-500 py-12">No voices found.</p>';
+                        initBlobs(0);
                     }
+                } else {
+                    initBlobs(0);
                 }
             } catch (err) {
                 console.error(err);
                 document.getElementById('all-speakers').innerHTML = '<p class="col-span-full text-center text-red-500 py-12">Failed to load voices. Ensure backend is running.</p>';
+                initBlobs(0);
             }
         });
     </script>
@@ -124,10 +202,9 @@
             position: fixed;
             inset: 0;
             overflow: hidden;
-            /* No background here so blobs can merge on transparency */
-            opacity: 0.06; /* Much more less visible */
-            z-index: -1; /* Behind content */
-            pointer-events: none; /* Don't interfere with interactions */
+            opacity: 0.7; /* Restored original opacity */
+            z-index: 0; /* Ensures it sits above body background but behind relative z-10 elements */
+            pointer-events: none;
         }
         .blob {
             position: absolute;
@@ -145,25 +222,8 @@
 </head>
 <body class="bg-[#f9f9f9] text-stone-900 font-body-md">
     <!-- Abstract Background (Lava Lamp) -->
-    <div class="lava-lamp-container">
-        <div class="blob-container absolute top-0 left-0 w-full h-full">
-            <div class="blob blob-1"></div>
-        </div>
-        <div class="blob-container absolute top-0 left-0 w-full h-full">
-            <div class="blob blob-2"></div>
-        </div>
-        <div class="blob-container absolute top-0 left-0 w-full h-full">
-            <div class="blob blob-3"></div>
-        </div>
-        <div class="blob-container absolute top-0 left-0 w-full h-full">
-            <div class="blob blob-4"></div>
-        </div>
-        <div class="blob-container absolute top-0 left-0 w-full h-full">
-            <div class="blob blob-5"></div>
-        </div>
-        <div class="blob-container absolute top-0 left-0 w-full h-full">
-            <div class="blob blob-6"></div>
-        </div>
+    <div class="lava-lamp-container" id="lava-container">
+        <!-- Blobs dynamically generated -->
     </div>
 
     <!-- Simple Navbar -->
@@ -179,7 +239,7 @@
         </div>
     </header>
 
-    <main class="snap-y snap-mandatory h-screen overflow-y-auto no-scrollbar" id="main-scroll">
+    <main class="snap-y snap-mandatory h-screen overflow-y-auto no-scrollbar relative z-10" id="main-scroll">
         <!-- Title Section -->
         <section class="scroll-section snap-start w-full h-screen flex flex-col justify-center px-4 sm:px-6 lg:px-12 pt-20 relative overflow-hidden">
 
@@ -194,59 +254,7 @@
             <!-- Dynamic Content -->
         </div>
     </main>
-    <script>
-        const mainScroll = document.getElementById('main-scroll');
-        const containers = document.querySelectorAll('.blob-container');
-        const lavaContainer = document.querySelector('.lava-lamp-container');
-        
-        // Initialize random positions and velocities for blobs
-        const blobs = [];
-        containers.forEach((container, index) => {
-            // Random initial positions (as percentages to be responsive)
-            let x = Math.random() * 80; // Keep away from extreme edges
-            let y = Math.random() * 80;
-            
-            // Random velocities
-            let vx = (Math.random() - 0.5) * 0.05;
-            let vy = (Math.random() - 0.5) * 0.05;
-            
-            // Set initial position
-            container.style.left = `${x}%`;
-            container.style.top = `${y}%`;
-            
-            blobs.push({ el: container, x, y, vx, vy });
-        });
-        
-        // Random Walk Animation Loop
-        function updateBlobs() {
-            blobs.forEach(b => {
-                b.x += b.vx;
-                b.y += b.vy;
-                
-                // Bounce off edges (keep within 0% to 90%)
-                if (b.x < 0 || b.x > 90) b.vx *= -1;
-                if (b.y < 0 || b.y > 90) b.vy *= -1;
-                
-                b.el.style.left = `${b.x}%`;
-                b.el.style.top = `${b.y}%`;
-            });
-            requestAnimationFrame(updateBlobs);
-        }
-        updateBlobs();
-        
-        // Scroll Effects (Subtle Parallax)
-        if (mainScroll) {
-            mainScroll.addEventListener('scroll', () => {
-                const scrolled = mainScroll.scrollTop;
-                
-                // Very subtle parallax
-                containers.forEach((el, index) => {
-                    const speed = (index + 1) * 0.02;
-                    el.style.transform = `translateY(${scrolled * speed}px)`;
-                });
-            });
-        }
-    </script>
+
     
     <!-- SVG Filter for Lava Lamp Effect -->
     <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
