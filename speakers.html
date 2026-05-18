@@ -138,7 +138,7 @@
                                     </div>
                                 `;
 
-                                el.innerHTML = `<div class="max-w-[1440px] w-full mx-auto flex flex-col md:flex-row items-center gap-8 sm:gap-12 lg:gap-24">${isEven ? textContent + imageContent : imageContent + textContent}</div>`;
+                                el.innerHTML = `<div class="max-w-[1440px] w-full mx-auto flex flex-col md:flex-row items-center gap-8 sm:gap-12 lg:gap-24 backdrop-blur-2xl bg-white/40 p-8 sm:p-12 lg:p-16 rounded-[2.5rem] border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)]">${isEven ? textContent + imageContent : imageContent + textContent}</div>`;
                                 container.appendChild(el);
                                 });
 
